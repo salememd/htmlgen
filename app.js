@@ -1,10 +1,8 @@
 function init(){
-var body = [pageHeader() , pageContent()];
- body = arrayMerge(body , bottomScripts());
- body.push(backgroundImages());
-
-render(body);
-
+pageHeader();
+pageContent();
+bottomScripts();
+backgroundImages();
 }
 
 
@@ -37,41 +35,77 @@ function pageHeader(){
 */
 
 
-var headerSection = HTMLGen("section" ,  {"class": "header" , "id": "header" }, true);
-
-var navigationbardiv = HTMLGen("div" ,  {"class": "navigationbar  navbar-fixed-top" }, true);
-
-var container  = HTMLGen("div" ,  {"class": "container" }, true);
-
-var logo  = HTMLGen("a" ,  {"href": "#","class": "logo" }, true);
-logo.addValue("كلية تقنية الحاسوب طرابلس");
-container.addValue(logo);
-
-var lifa = HTMLGen("i" ,  {"class": "fa fa-bars pull-right" , "id": "iconhideshow" }, true);
-container.addValue(lifa);
-
-var ulnav = HTMLGen("ul" ,  {"class": "nav hide nav-pills pull-right"}, true);
-
-var lipre = HTMLGen("li" ,  {"role": "presentation"}, true);
-var a = HTMLGen("a" ,  {"href": "http://www.cctt.edu.ly/" , title: "موقع كلية تقنية الحاسوب طرابلس" , target: "_blank" }, true);
-a.addValue(HTMLGen("img" ,  {"src": "http://www.cctt.edu.ly/result/images/home.png" , "class": "icon-main"}));
-lipre.addValue(a);
-ulnav.addValue(lipre);
-
-var lipre2 = HTMLGen("li" ,  {"role": "presentation"}, true);
-var a2 = HTMLGen("a" ,  {"href": "https://www.facebook.com/cctt.edu.ly?fref=ts" , title: "فيس بوك" , target: "_blank" }, true);
-a2.addValue(HTMLGen("img" ,  {"src": "http://www.cctt.edu.ly/result/images/face.png" , "class": "icon-main"}));
-lipre2.addValue(a2);
-ulnav.addValue(lipre2);
-
-container.addValue(ulnav);
-
-navigationbardiv.addValue(container);
-
-headerSection.addValue(navigationbardiv);
 
 
-return headerSection;
+var headerSection = document.createElement("section");
+headerSection.setAttribute("class", "header");
+headerSection.setAttribute("id", "header");
+
+var navigationbardiv = document.createElement("div");
+navigationbardiv.setAttribute("class", "navigationbar  navbar-fixed-top");
+
+
+var container  =  document.createElement("div");
+container.setAttribute("class", "container");
+
+var logo  = document.createElement("a");
+logo.setAttribute("href","#");
+logo.setAttribute("class","logo");
+logo.appendChild(document.createTextNode("كلية تقنية الحاسوب طرابلس"));
+
+container.appendChild(logo);
+
+
+var lifa = document.createElement("i");  
+lifa.setAttribute("class", "fa fa-bars pull-right" );
+lifa.setAttribute("id", "iconhideshow" );
+container.appendChild(lifa);
+
+var ulnav = document.createElement("ul");   
+ulnav.setAttribute("class", "nav hide nav-pills pull-right");
+
+
+var lipre =  document.createElement("li");  
+lipre.setAttribute("role" , "presentation");
+
+var a = document.createElement("a"); 
+a.setAttribute("href" , "http://www.cctt.edu.ly/");
+a.setAttribute("title" , "موقع كلية تقنية الحاسوب طرابلس");
+a.setAttribute("target" , "_blank");
+
+var aimg = document.createElement("img"); 
+aimg.setAttribute("src" , "http://www.cctt.edu.ly/result/images/home.png");
+aimg.setAttribute("class" , "icon-main");
+
+a.appendChild(aimg);
+
+lipre.appendChild(a);
+ulnav.appendChild(lipre);
+
+var lipre2 = document.createElement("li");  
+lipre2.setAttribute("role","presentation");
+
+var a2 = document.createElement("a"); 
+a2.setAttribute("href", "https://www.facebook.com/cctt.edu.ly?fref=ts");
+a2.setAttribute("title", "فيس بوك");
+a2.setAttribute("target", "_blank");
+
+a2img = document.createElement("img"); 
+a2img.setAttribute("src" , "http://www.cctt.edu.ly/result/images/face.png");
+a2img.setAttribute("class" , "icon-main");
+
+a2.appendChild(a2img);
+lipre2.appendChild(a2);
+ulnav.appendChild(lipre2);
+
+container.appendChild(ulnav);
+
+navigationbardiv.appendChild(container);
+
+headerSection.appendChild(navigationbardiv);
+
+document.body.appendChild(headerSection);
+
 }
 
 function pageContent(){
@@ -128,81 +162,125 @@ function pageContent(){
 */
 
 
-var contentdiv = HTMLGen("div" ,  {"class": "top-content"}, true);
+var contentdiv =  document.createElement("div"); 
+contentdiv.setAttribute("class" , "top-content");
 
-var innercontetnt = HTMLGen("div" ,  {"class": "inner-bg" }, true);
+var innercontetnt = document.createElement("div"); 
+innercontetnt.setAttribute("class" , "inner-bg");
 
-var container  = HTMLGen("div" ,  {"class": "container" }, true);
+var container  = document.createElement("div");
+container.setAttribute("class" , "container");
 
-var rowdiv  = HTMLGen("div" ,  {"class": "row" }, true);
+var rowdiv  = document.createElement("div"); 
+rowdiv.setAttribute("class" , "row");
 
-var coldiv  = HTMLGen("div" ,  {"class": "col-sm-6 col-sm-offset-3 form-box" }, true);
+var coldiv  = document.createElement("div");  
+coldiv.setAttribute("class" , "col-sm-6 col-sm-offset-3 form-box");
 
-var formtopdiv  = HTMLGen("div" ,  {"class": "form-top" }, true);
+var formtopdiv  = document.createElement("div");  
+formtopdiv.setAttribute("class" , "form-top");
 
-var formtopleftdiv  = HTMLGen("div" ,  {"class": "form-top-left" }, true);
+var formtopleftdiv  = document.createElement("div");   
+formtopleftdiv.setAttribute("class" , "form-top-left");
 
-var h3  = HTMLGen("h3" ,  {} , true);
-h3.addValue(" نتيجة الفصل الدراسي خريف 2016-2017 ");
-
-
-var pp1  = HTMLGen("p" ,  {"class": "pp1" } , true);
-pp1.addValue("ادخل رقم القيد وسنة الميلاد ");
-
-formtopleftdiv.addValue(h3);
-formtopleftdiv.addValue(pp1);
-
-var formtoprightdiv  = HTMLGen("div" ,  {"class": "form-top-right" }, true);
-formtoprightdiv.addValue(HTMLGen("i" ,  {"class": "fa fa-lock" }, true));
-
-formtopdiv.addValue(formtopleftdiv);
-formtopdiv.addValue(formtoprightdiv);
+var h3  = document.createElement("h3");
+h3.appendChild(document.createTextNode(" نتيجة الفصل الدراسي خريف 2016-2017 "));
 
 
-var formbottomiv  = HTMLGen("div" ,  {"class": "form-bottom" }, true);
-var formsubmit  = HTMLGen("form" ,  {"role": "form", "action": "http://cctt.edu.ly/result/" , "method": "POST", "class": "login-form" }, true);
+var pp1  = document.createElement("p"); 
+pp1.setAttribute("class" , "pp1");
+pp1.appendChild(document.createTextNode("ادخل رقم القيد وسنة الميلاد "));
 
-var formgroupdiv  = HTMLGen("div" ,  {"class": "form-group" }, true);
-var lableid = HTMLGen("label" ,  {"class": "sr-only", "for": "form-username"}, true);
-lableid.addValue("رقم القيد");
+formtopleftdiv.appendChild(h3);
+formtopleftdiv.appendChild(pp1);
 
-var inputid = HTMLGen("input" ,  {"type": "password", "name": "form-username" , "placeholder": "رقم القيد..." , "class": "form-username form-control" , "id": "form-username"});
+var formtoprightdiv  = document.createElement("div"); 
+formtoprightdiv.setAttribute("class" , "form-top-right");
 
-formgroupdiv.addValue(lableid);
-formgroupdiv.addValue(inputid);
+var fai  = document.createElement("i"); 
+formtoprightdiv.setAttribute("class" , "fa fa-lock");
 
-var formgroupdiv2  = HTMLGen("div" ,  {"class": "form-group" }, true);
+formtoprightdiv.appendChild(fai);
 
-var lablepass = HTMLGen("label" ,  {"class": "sr-only", "for": "form-password"}, true);
-lablepass.addValue("سنة الميلاد");
-
-var inputpass = HTMLGen("input" ,  {"type": "password", "name": "form-password" , "placeholder": "سنة الميلاد..." , "class": "form-password form-control" , "id": "form-password"});
-
-formgroupdiv2.addValue(lablepass);
-formgroupdiv2.addValue(inputpass);
-
-var btnsubmit = HTMLGen("button" ,  {"type": "submit", "class": "btn"} , true);
-btnsubmit.addValue("دخـول");
+formtopdiv.appendChild(formtopleftdiv);
+formtopdiv.appendChild(formtoprightdiv);
 
 
-formsubmit.addValue(formgroupdiv);
-formsubmit.addValue(formgroupdiv2);
-formsubmit.addValue(btnsubmit);
+var formbottomiv  = document.createElement("div");
+formbottomiv.setAttribute("class","form-bottom");
 
-formbottomiv.addValue(formsubmit);
+var formsubmit  = document.createElement("form"); 
+formsubmit.setAttribute("role","form");
+formsubmit.setAttribute("action","http://cctt.edu.ly/result/");
+formsubmit.setAttribute("method","POST");
+formsubmit.setAttribute("class","login-form");
 
-coldiv.addValue(formtopdiv);
-coldiv.addValue(formbottomiv);
 
-rowdiv.addValue(coldiv);
+var formgroupdiv  = document.createElement("div");  
+formgroupdiv.setAttribute("class","form-group");
 
-container.addValue(rowdiv);
+var lableid = document.createElement("label");  
+ lableid.setAttribute("class","sr-only");
+  lableid.setAttribute("for","form-username");
 
-innercontetnt.addValue(container);
+lableid.appendChild(document.createTextNode("رقم القيد"));
 
-contentdiv.addValue(innercontetnt);
 
-return contentdiv;
+var inputid = document.createElement("input"); 
+inputid.setAttribute("type","password");
+inputid.setAttribute("name","form-username");
+inputid.setAttribute("placeholder","رقم القيد...");
+inputid.setAttribute("class","form-username form-control");
+inputid.setAttribute("id","form-username");
+
+
+formgroupdiv.appendChild(lableid);
+formgroupdiv.appendChild(inputid);
+
+var formgroupdiv2  = document.createElement("div");
+formgroupdiv2.setAttribute("class","form-group");
+
+var lablepass = document.createElement("label");
+lablepass.setAttribute("class","sr-only");
+lablepass.setAttribute("for","form-password");
+lablepass.appendChild(document.createTextNode("سنة الميلاد"));
+
+
+var inputpass = document.createElement("input");
+inputpass.setAttribute("type","password");
+inputpass.setAttribute("name","form-password");
+inputpass.setAttribute("placeholder","سنة الميلاد...");
+inputpass.setAttribute("class","form-password form-control");
+inputpass.setAttribute("id","form-password");
+
+formgroupdiv2.appendChild(lablepass);
+formgroupdiv2.appendChild(inputpass);
+
+var btnsubmit = document.createElement("button");
+btnsubmit.setAttribute("type","submit");
+btnsubmit.setAttribute("class","btn");
+
+btnsubmit.appendChild(document.createTextNode("دخـول"));
+
+
+formsubmit.appendChild(formgroupdiv);
+formsubmit.appendChild(formgroupdiv2);
+formsubmit.appendChild(btnsubmit);
+
+formbottomiv.appendChild(formsubmit);
+
+coldiv.appendChild(formtopdiv);
+coldiv.appendChild(formbottomiv);
+
+rowdiv.appendChild(coldiv);
+
+container.appendChild(rowdiv);
+
+innercontetnt.appendChild(container);
+
+contentdiv.appendChild(innercontetnt);
+
+document.body.appendChild(contentdiv);
 }
 
 
@@ -227,10 +305,58 @@ function bottomScripts(){
         <script src="assets/js/scripts.js"></script>
 */
 
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/jquery-1.11.2.min.js");
+document.body.appendChild(js);
 
-var ja = [HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/jquery-1.11.2.min.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/jquery.circlechart.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/bootstrap.min.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/owl.carousel.min.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/isotope.pkgd.min.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/wow.min.js"}, true) , HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/jquery.validate.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/nivo-lightbox/nivo-lightbox.min.js"}, true) , HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/js/script.js"}, true), HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/assets/js/jquery-1.11.1.min.js"}, true),HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/assets/bootstrap/js/bootstrap.min.js"}, true),HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/assets/js/jquery.backstretch.min.js"}, true),HTMLGen("script" ,  {"src": "http://cctt.edu.ly/result/assets/js/scripts.js"}, true)];
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/jquery.circlechart.js");
+document.body.appendChild(js);
 
-return ja;
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/bootstrap.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/owl.carousel.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/isotope.pkgd.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/wow.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/jquery.validate.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/nivo-lightbox/nivo-lightbox.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/js/script.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/assets/js/jquery-1.11.1.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/assets/bootstrap/js/bootstrap.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/assets/js/jquery.backstretch.min.js");
+document.body.appendChild(js);
+
+var js = document.createElement("script");
+js.setAttribute("src","http://cctt.edu.ly/result/assets/js/scripts.js");
+document.body.appendChild(js);
+
 }
 
 function backgroundImages(){
@@ -238,21 +364,20 @@ function backgroundImages(){
 	
 <div class="backstretch" style="left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 710px; width: 1519px; z-index: -999999; position: fixed;"><img style="position: absolute; margin: 0px; padding: 0px; border: medium none; width: 1519px; height: 1139.25px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -214.625px;" src="assets/img/backgrounds/2.jpg" class="deleteable"><img style="position: absolute; display: none; margin: 0px; padding: 0px; border: medium none; width: auto; height: auto; max-height: none; max-width: none; z-index: -999999;" src="assets/img/backgrounds/3.jpg"></div>
 	*/
-	var backstretch = HTMLGen("div" ,  {"class": "backstretch" , "style": "left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 710px; width: 1519px; z-index: -999999; position: fixed;"}, true);
-	var img1 = HTMLGen("img" ,  {"class": "deleteable" , "src": "http://cctt.edu.ly/result/assets/img/backgrounds/2.jpg" , "style": "position: absolute; margin: 0px; padding: 0px; border: medium none; width: 1519px; height: 1139.25px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -214.625px;"});
-	var img2 = HTMLGen("img" ,  {"class": "deleteable" , "src": "http://cctt.edu.ly/result/assets/img/backgrounds/3.jpg" , "style": "position: absolute; margin: 0px; padding: 0px; border: medium none; width: 1519px; height: 1139.25px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -214.625px;"});
-	backstretch.addValue(img1);
-	backstretch.addValue(img2);
-	
-	return backstretch;
-}
+	var backstretch = document.createElement("div"); 
+	backstretch.setAttribute("class","backstretch");
+		backstretch.setAttribute("style","left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 710px; width: 1519px; z-index: -999999; position: fixed;");
 
-function arrayMerge(base, addendum) {
-    var out = [].concat(base);
-    for (var i = 0, len = addendum.length; i < len; i++) {
-        if (base.indexOf(addendum[i]) < 0) {
-            out.push(addendum[i]);
-        }
-    }
-    return out;
+	var img1 = document.createElement("img"); 
+		img1.setAttribute("class","class");
+		img1.setAttribute("src", "http://cctt.edu.ly/result/assets/img/backgrounds/2.jpg");
+		img1.setAttribute("style", "position: absolute; margin: 0px; padding: 0px; border: medium none; width: 1519px; height: 1139.25px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -214.625px;");
+
+	var img2 = document.createElement("img"); 
+			img2.setAttribute("class","deleteable");
+		img2.setAttribute("src", "http://cctt.edu.ly/result/assets/img/backgrounds/3.jpg");
+		img2.setAttribute("style", "position: absolute; margin: 0px; padding: 0px; border: medium none; width: 1519px; height: 1139.25px; max-height: none; max-width: none; z-index: -999999; left: 0px; top: -214.625px;");
+	backstretch.appendChild(img1);
+	backstretch.appendChild(img2);
+document.body.appendChild(backstretch);
 }
