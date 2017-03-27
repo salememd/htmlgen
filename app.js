@@ -33,8 +33,11 @@ rootLayout.add(inpass);
 var button = new JSButton();
 button.setTitle("Login");
 button.setWidth("155px");
+button.setHeigh("22px");
+button.setClassName("loginbutton");
 
 button.addOnClickListener(function(){
+	
  var msg = new JSPopUpMessages();
  msg.setMessage("Welcome !");
  var btn = new JSButton();
