@@ -1,0 +1,222 @@
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-ly" lang="en-ly" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en">
+<title>Libya Guide</title>
+<meta name="keywords" content="">
+<meta name="Author" content="Graphic and Coding Design by Libya Guide for Information Technology by Basem Ibrahim Elazzabi">
+<meta name="Copyright" content="Libya Guide for Information Technology">
+<style>
+
+
+.floating-button{
+
+  border-radius: 50%;
+  background: #db4437;
+cursor: pointer;
+  box-shadow: 0px 2px 5px #666;
+}
+
+.floating-button-img{
+  position: absolute;
+  top: 0;
+  display: block;
+  bottom: 0;
+  left: 0;
+  display: block;
+  right: 0;
+  padding: 0;
+  margin: auto;
+  line-height: 65px;
+
+}
+.floating-button-text{
+  color: white;
+  position: absolute;
+  top: 0;
+  display: block;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  line-height: 50px;
+  font-size: 38px;
+  font-family: 'Roboto';
+  font-weight: 300;
+
+  
+}
+</style>
+<link type="text/css" rel="stylesheet" href="http://solartracksystem.com:62231/banking/js/jui/jui-theme.css?v=1.1" />
+<link type="text/css"  rel="stylesheet" href="http://solartracksystem.com:62231/banking/css/style.css?v=1.1" />
+<link type="text/css"  rel="stylesheet" href="http://solartracksystem.com:62231/banking/css/en.css?v=1.1" />
+    
+<script src="http://solartracksystem.com:62231/banking/js/jui/jui-core.js?v=1.1" type="text/javascript"></script>
+
+<script type="text/javascript">
+    /* global app, webapp */
+    
+    var webapp = {
+   
+    };
+	app.main = function(){
+   new webapp.Login();  
+   };
+
+</script>
+
+<script src="http://solartracksystem.com:62231/banking/js/jui/jui-components.js?v=1.1" type="text/javascript"></script>
+<script src="http://solartracksystem.com:62231/banking/js/jui/jui-window.js?v=1.1" type="text/javascript"></script>
+
+
+
+<script>
+jUI.FloatingButton = function(pa, _element){
+        if(pa && pa.__loading__) return;
+        var newPa = app.$(app.clone(pa),{
+            className: "floating-button",
+			width: "50",
+			height: "50",
+            visible: true,
+        }, false);
+        
+        jUI.Layout.call(this,newPa,_element);
+    };
+
+    (function(){
+        jUI.FloatingButton.prototype = new jUI.Layout({__loading__: true});
+	jUI.FloatingButton.prototype.constructor = jUI.FloatingButton;
+        
+        
+        // Overriden Function Start ===========================================
+        
+        jUI.FloatingButton.prototype._initProp = function(pa){
+           jUI.Layout.prototype._initProp.call(this, pa);
+		   this.__V.FloatingButton={};
+		   
+        };
+        
+        // Overriden Function End ===========================================
+        
+        jUI.FloatingButton.prototype.setBackgroundColor = function(color){
+            var V = this.__V;
+            V.el.style.background=color;
+			V.FloatingButton.backgroundColor = color;
+        };
+		
+        jUI.FloatingButton.prototype.setImg = function(img){
+		 new jUI.Image({
+                    url: img,
+                    classModifier: "floating-button-img",
+					parent:this
+        });
+			 this.__V.FloatingButton.img = img;
+        };
+		
+		jUI.FloatingButton.prototype.setText = function(text){
+		a = new jUI.Text({
+                    selectable: false,
+					classModifier: "floating-button-text",
+                    parent:this,
+					
+					
+                });
+		a.setText(text);
+		};
+		
+		 jUI.FloatingButton.prototype.getBackgroundColor = function(){
+
+			return V.FloatingButton.backgroundColor ;
+        };
+        
+         jUI.FloatingButton.prototype.getImg = function(){
+
+			return V.FloatingButton.img ;
+        };
+        
+        app.$(jUI.FloatingButton.prototype.__props = app.clone(jUI.FloatingButton.prototype.__props), {
+            imgURL: "setImg",
+            backgroundColor: "setBackgroundColor",
+			text: "setText",
+
+        });
+        
+        jUI.FloatingButton.prototype.__events = jUI.FloatingButton.prototype.__events.clone().concat([
+        ]);
+        
+    })();
+	
+	
+	
+
+/* global app, webapp, jUI */
+(function(){
+    webapp.Login = function(){jUI.ViewController.call(this);};
+    webapp.Login.prototype = new jUI.ViewController({__loading__:true});
+    webapp.Login.prototype.constructor = webapp.Login;
+    webapp.Login.prototype._initController = function(){
+	this.viewDidLoad = function(){
+            this.view.show();
+
+        };
+     
+    };
+	
+	webapp.Login.prototype.do= function(){
+	alert("test");
+	}
+	
+    webapp.Login.prototype._initView = function(){
+        return new  jUI.Window({
+		width: "100%",
+        height: "100%",
+		children: [
+                new jUI.FloatingButton({
+                            imgURL: "http://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/1x/bt_compose2_1x.png",
+                            backgroundColor: "#666",
+							layout: jUI.ltFollowHor,
+							events:{
+							 click: this.do
+							}
+                }),   
+               new jUI.FloatingButton({
+                            imgURL: "http://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/1x/bt_compose2_1x.png",
+                            backgroundColor: "#d10000",
+							layout: jUI.ltFollowHor,
+							margin:{l:12},
+							events:{
+							 click: this.do
+							}
+                }),	
+
+				new jUI.FloatingButton({
+                            backgroundColor: "#42ac88",
+							layout: jUI.ltFollowHor,
+							margin:{l:12},
+							text: "+",
+							events:{
+							 click: this.do
+							}
+                })				
+
+
+            ]
+        });
+    };
+})();
+
+</script>
+
+
+</head>
+<body  onload="void(0);">
+</body>
+</html>
