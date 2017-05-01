@@ -117,9 +117,7 @@
 
                 jUI.Layout.call(this, newPa, el);
             };
-            (function() {
 
-            })();
             (function() {
                 jUI.Tree.prototype = new jUI.Layout({
                     __loading__: true
@@ -142,12 +140,15 @@
 
 
                     for (var i = 0; i < nodes.length; i++) {
-				
-					// subNode case
+
+                        // subNode case
                         if (nodes[i] instanceof jUI.Tree) {
-                            nodes[i].__V.el.style.position = "relative"; 
+                            nodes[i].__V.el.style.position = "relative";
                             this.__V.Tree.Nodes[this.__V.Tree.Nodes.length - 1].nodeDom.appendChild(nodes[i].__V.el);
-							this.__V.Tree.Nodes.push({"nodeDom": nodes[i].__V.el, "jUIView": nodes[i]});
+                            this.__V.Tree.Nodes.push({
+                                "nodeDom": nodes[i].__V.el,
+                                "jUIView": nodes[i]
+                            });
 
 
                         } else {
@@ -155,7 +156,10 @@
                             nodes[i].__V.el.style.float = "none"; // float property makes the tree looks ugly,
                             nodeDom.appendChild(nodes[i].__V.el);
                             this.__V.el.appendChild(nodeDom);
-							this.__V.Tree.Nodes.push({"nodeDom": nodeDom, "jUIView": nodes[i]});
+                            this.__V.Tree.Nodes.push({
+                                "nodeDom": nodeDom,
+                                "jUIView": nodes[i]
+                            });
                         }
                     }
 
@@ -205,7 +209,7 @@
 
                         new jUI.Tree({
                             leafs: [
-							
+
                                 new jUI.Button({
                                     text: "Button",
                                     width: 150,
@@ -296,24 +300,24 @@
                                             layout: jUI.Layout.ltFollowVer,
                                             forId: ""
                                         }),
-										
-                                new jUI.Tree({
-                                    classModifier: "subtree",
-                                    leafs: [
-                                        new jUI.Label({
-                                            classModifier: "label",
-                                            text: "sdsdsdds",
-                                            layout: jUI.Layout.ltFollowVer,
-                                            forId: ""
-                                        }),
-                                        new jUI.Label({
-                                            classModifier: "label",
-                                            text: "sdsdsdds",
-                                            layout: jUI.Layout.ltFollowVer,
-                                            forId: ""
+
+                                        new jUI.Tree({
+                                            classModifier: "subtree",
+                                            leafs: [
+                                                new jUI.Label({
+                                                    classModifier: "label",
+                                                    text: "sdsdsdds",
+                                                    layout: jUI.Layout.ltFollowVer,
+                                                    forId: ""
+                                                }),
+                                                new jUI.Label({
+                                                    classModifier: "label",
+                                                    text: "sdsdsdds",
+                                                    layout: jUI.Layout.ltFollowVer,
+                                                    forId: ""
+                                                })
+                                            ]
                                         })
-                                    ]
-                                })
                                     ]
                                 })
 
