@@ -49,9 +49,7 @@
 
                 jUI.Layout.call(this, newPa, el);
             };
-            (function() {
 
-            })();
             (function() {
                 jUI.Tree.prototype = new jUI.Layout({
                     __loading__: true
@@ -73,7 +71,10 @@
                 jUI.Tree.prototype.leafs = function(nodes, parent = null, isSelectable = false) {
 
                     var obj = this;
+					if(this.__V.Tree.Nodes.length == 0){
+					      this.__V.Tree.Nodes = nodes;
 
+					}
 
                     for (var i = 0; i < nodes.length; i++) {
 
@@ -85,43 +86,160 @@
 
                         if (nodes[i].childs.length > 0) {
 
-                            var toggle = document.createElement("input");
-                            toggle.setAttribute("type", "checkbox");
 
 
-                            /*
+                            // Multi selection part
+
                             if (nodes[i].isSelectable == true || isSelectable == true) {
+							nodes[i].isSelectable = true;
                                 var select = document.createElement("input");
                                 select.setAttribute("type", "checkbox");
-                                
+                                nodes[i].selectDom = select;
+
                                 select.addEventListener("change", function() {
-                                    this.index = i;
+                                    var checkObj = this;
+
                                     if (this.checked == true) {
-                                        for (var j = 0; j < obj.__V.Tree.Nodes[this.index -1].childs.length; j++) {
-										
-                                            obj.__V.Tree.Nodes[this.index -1].childs[j].selectDom.checked = true;
-											obj.__V.Tree.selected.push(obj.__V.Tree.Nodes[this.index -1].childs[j]);
-                                        }
+
+                                        (function searchForNode(t) {
+                                            for (var j = 0; j < t.length; j++) {
+
+                                                searchForNode(t[j].childs);
+
+                                                if (t[j].selectDom == checkObj) {
+
+
+                                                    (function select(t) {
+
+                                                        if (t.length == 0) {
+                                                            return;
+                                                        }
+                                                        for (var i = 0; i < t.length; i++) {
+                                                            if (t[i].selectDom.checked == false) {
+
+                                                                select(t[i].childs);
+
+                                                                var check = false;
+                                                                for (j = 0; j < obj.__V.Tree.selected.length; j++)
+                                                                    if (obj.__V.Tree.selected[j] == t[i])
+                                                                        check = true;
+
+                                                                if (t[i].childs.length == 0 && check == false)
+                                                                    obj.__V.Tree.selected.push(t[i])
+
+                                                                t[i].selectDom.checked = true;
+                                                            }
+                                                        }
+
+                                                    })(t[j].childs);
+
+
+                                                }
+
+                                            }
+
+
+                                        })(obj.__V.Tree.Nodes);
+
+
+
 
                                     } else {
-                                        for (var j = 0; j < obj.__V.Tree.Nodes[this.index-1].childs.length; j++) {
-                                            obj.__V.Tree.Nodes[this.index  - 1].childs[j].selectDom.checked = false;
-                                            obj.__V.Tree.selected.splice(this.index - 1,1); 
 
-                                        }
+                                        var last = true;
+
+                                        (function searchForNode(t) {
+                                            for (var j = 0; j < t.length; j++) {
+                                                searchForNode(t[j].childs);
+                                                if (t[j].selectDom == checkObj) {
+
+                                                    (function unselect(t) {
+
+                                                        if (t.length == 0) {
+                                                            return;
+                                                        }
+                                                        for (var i = 0; i < t.length; i++) {
+
+                                                            if (t[i].selectDom.checked == true) {
+                                                                unselect(t[i].childs);
+                                                                for (j = 0; j < obj.__V.Tree.selected.length; j++)
+                                                                    if (obj.__V.Tree.selected[j] == t[i])
+                                                                        obj.__V.Tree.selected.splice(j, 1);
+
+                                                                t[i].selectDom.checked = false;
+
+
+                                                            }
+
+
+                                                        }
+
+                                                    })(t[j].childs);
+
+
+                                                }
+
+                                            }
+
+
+                                        })(obj.__V.Tree.Nodes);
+
+
+
                                     }
+                                    /**** DEBUG ****/
+                                    var s = "";
+                                    obj.__V.Tree.selected.forEach(function(item) {
+                                        s += item.jUIView.__V.Label.text + ", ";
+                                    });
+                                    alert("Selected:" + s);
+                                    /**************/
                                 });
 
                             }
-							*/
 
 
                             var subnode = document.createElement("ul");
+                            var toggle = document.createElement("input");
+                            toggle.setAttribute("type", "checkbox");
+
                             toggle.addEventListener("change", function() {
+
+                                var checkObj = this;
                                 if (this.checked == true) {
-                                    subnode.style.display = "block";
+
+                                    (function searchForNode(t) {
+                                        for (var j = 0; j < t.length; j++) {
+
+                                            searchForNode(t[j].childs);
+
+                                            if (t[j].expandDom == checkObj) {
+
+                                                t[j].subnodeDom.style.display = "block";
+
+                                            }
+
+                                        }
+
+
+                                    })(obj.__V.Tree.Nodes);
+
                                 } else {
-                                    subnode.style.display = "none";
+
+                                    (function searchForNode(t) {
+                                        for (var j = 0; j < t.length; j++) {
+
+                                            searchForNode(t[j].childs);
+
+                                            if (t[j].expandDom == checkObj) {
+                                                t[j].subnodeDom.style.display = "none";
+
+                                            }
+
+                                        }
+
+
+                                    })(obj.__V.Tree.Nodes);
                                 }
                             });
 
@@ -135,37 +253,103 @@
                             nodeDom.appendChild(toggle);
 
                             nodeDom.appendChild(checkView);
-                            //nodeDom.appendChild(select);
-
+                            if (nodes[i].isSelectable == true || isSelectable == true) {
+                                nodeDom.appendChild(select);
+                            }
                             nodeDom.appendChild(nodes[i].jUIView.__V.el);
                             nodeDom.appendChild(subnode);
 
+                            nodes[i].subnodeDom = subnode;
+                            nodes[i].expandDom = toggle;
 
 
                         } else {
 
-                            /*
-						if (nodes[i].isSelectable == true) {
+
+                            if (nodes[i].isSelectable == true || isSelectable == true) {
+							nodes[i].isSelectable = true;
                                 var select = document.createElement("input");
                                 select.setAttribute("type", "checkbox");
-								nodes[i].selectDom = select;
-								var temp = nodes[i];
-								select.addEventListener("change", function() {
-                                        if (this.checked == true) {
-                                            obj.__V.Tree.selected.push(temp);
-											this.index = obj.__V.Tree.selected.length - 1
+                                nodes[i].selectDom = select;
 
-                                        } else {
-                                            obj.__V.Tree.selected.splice(this.index,1); 
+                                select.addEventListener("change", function() {
+                                    var checkObj = this;
 
-                                        }
+                                    if (this.checked == true) {
+
+
+                                        (function searchForNode(t) {
+                                            for (var j = 0; j < t.length; j++) {
+                                                searchForNode(t[j].childs);
+                                                if (t[j].selectDom == checkObj) {
+
+                                                    obj.__V.Tree.selected.push(t[j]);
+
+                                                }
+
+                                            }
+
+
+                                        })(obj.__V.Tree.Nodes);
+
+
+
+
+                                    } else {
+
+                                        (function searchForNode(t) {
+                                            for (var j = 0; j < t.length; j++) {
+                                                searchForNode(t[j].childs);
+                                                if (t[j].selectDom == checkObj) {
+
+                                                    obj.__V.Tree.selected.splice(j, 1);
+
+                                                }
+
+                                            }
+
+
+                                        })(obj.__V.Tree.selected);
+
+                                    }
+
+                                    /**** DEBUG ****/
+                                    var s = "";
+                                    obj.__V.Tree.selected.forEach(function(item) {
+                                        s += item.jUIView.__V.Label.text + ", ";
                                     });
-							nodeDom.appendChild(select);
+                                    alert("Selected:" + s);
+                                    /**************/
+                                    /*
+									 var c = 0;
+									 (function searchForNode(t) {
+									 if(t.childs.length > 0){
+									 searchForNode(t[j].childs);
+									 if(c == 0)
+									 t[j].selectDom.checked = true;
+									 }
+                                            for (var j = 0; j < t.length; j++) {
+                                                
+                                                if (t[j].selectDom.checked == true) {
+												
+                                                }else{
+												c = 1;
+												}
 
-						
+                                            }
+
+
+                                        })(obj.__V.Tree.Nodes);
+*/
+                                });
+
+
+                                nodeDom.appendChild(select);
+
+
                             }
 
-*/
+
 
                             nodeDom.appendChild(nodes[i].jUIView.__V.el);
 
@@ -173,10 +357,10 @@
 
                         if (parent == null) {
 
-                            this.__V.Tree.Nodes = nodes;
                             this.__V.el.appendChild(nodeDom);
 
                         } else {
+						
                             parent.appendChild(nodeDom);
                         }
 
@@ -187,13 +371,19 @@
 
                 };
 
+
+
                 jUI.Tree.prototype.getLeafs = function() {
                     return this.__V.Tree.Nodes;
+                };
+				
+				jUI.Tree.prototype.getSelectedNodes = function() {
+                    return this.__V.Tree.selected;
                 };
 
                 app.$(jUI.Tree.prototype.__props = app.clone(jUI.Tree.prototype.__props), {
                     leafs: "leafs"
-
+					
                 });
 
                 jUI.Tree.prototype.__events = jUI.Tree.prototype.__events.clone().concat([]);
@@ -236,32 +426,33 @@
                                 {
                                     jUIView: new jUI.Label({
                                         classModifier: "label",
-                                        text: "ABC",
+                                        text: "A",
                                         layout: jUI.Layout.ltFollowVer,
                                         forId: ""
                                     }),
                                     childs: [],
+                                    isSelectable: true
 
 
                                 },
                                 {
                                     jUIView: new jUI.Label({
                                         classModifier: "label",
-                                        text: "DEF",
+                                        text: "B-E",
                                         layout: jUI.Layout.ltFollowVer,
                                         forId: ""
                                     }),
                                     childs: [{
                                             jUIView: new jUI.Label({
                                                 classModifier: "label",
-                                                text: "GHI",
+                                                text: "B-D",
                                                 layout: jUI.Layout.ltFollowVer,
                                                 forId: ""
                                             }),
                                             childs: [{
                                                     jUIView: new jUI.Label({
                                                         classModifier: "label",
-                                                        text: "JKL",
+                                                        text: "B",
                                                         layout: jUI.Layout.ltFollowVer,
                                                         forId: ""
                                                     }),
@@ -272,14 +463,14 @@
                                                 {
                                                     jUIView: new jUI.Label({
                                                         classModifier: "label",
-                                                        text: "LMN",
+                                                        text: "C-D",
                                                         layout: jUI.Layout.ltFollowVer,
                                                         forId: ""
                                                     }),
                                                     childs: [{
                                                             jUIView: new jUI.Label({
                                                                 classModifier: "label",
-                                                                text: "OPQ",
+                                                                text: "C",
                                                                 layout: jUI.Layout.ltFollowVer,
                                                                 forId: ""
                                                             }),
@@ -290,7 +481,7 @@
                                                         {
                                                             jUIView: new jUI.Label({
                                                                 classModifier: "label",
-                                                                text: "RST",
+                                                                text: "D",
                                                                 layout: jUI.Layout.ltFollowVer,
                                                                 forId: ""
                                                             }),
@@ -309,7 +500,7 @@
                                         {
                                             jUIView: new jUI.Label({
                                                 classModifier: "label",
-                                                text: "UVW",
+                                                text: "E",
                                                 layout: jUI.Layout.ltFollowVer,
                                                 forId: ""
                                             }),
@@ -318,9 +509,289 @@
 
                                         }
                                     ],
-									isExpanded: true
+                                    isExpanded: true,
+                                    isSelectable: true
 
-                                }
+
+                                },
+                                {
+                                    jUIView: new jUI.Label({
+                                        classModifier: "label",
+                                        text: "F-I",
+                                        layout: jUI.Layout.ltFollowVer,
+                                        forId: ""
+                                    }),
+                                    childs: [{
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "F-H",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: [{
+                                                    jUIView: new jUI.Label({
+                                                        classModifier: "label",
+                                                        text: "F",
+                                                        layout: jUI.Layout.ltFollowVer,
+                                                        forId: ""
+                                                    }),
+                                                    childs: [],
+
+
+                                                },
+                                                {
+                                                    jUIView: new jUI.Label({
+                                                        classModifier: "label",
+                                                        text: "G-H",
+                                                        layout: jUI.Layout.ltFollowVer,
+                                                        forId: ""
+                                                    }),
+                                                    childs: [{
+                                                            jUIView: new jUI.Label({
+                                                                classModifier: "label",
+                                                                text: "G",
+                                                                layout: jUI.Layout.ltFollowVer,
+                                                                forId: ""
+                                                            }),
+                                                            childs: [],
+
+
+                                                        },
+                                                        {
+                                                            jUIView: new jUI.Label({
+                                                                classModifier: "label",
+                                                                text: "H",
+                                                                layout: jUI.Layout.ltFollowVer,
+                                                                forId: ""
+                                                            }),
+                                                            childs: [],
+
+
+                                                        }
+                                                    ],
+
+
+                                                }
+                                            ],
+
+
+                                        },
+                                        {
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "I",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: [],
+
+
+                                        }
+                                    ],
+                                    isExpanded: true,
+
+
+                                },
+                                {
+                                    jUIView: new jUI.Label({
+                                        classModifier: "label",
+                                        text: "J-Z",
+                                        layout: jUI.Layout.ltFollowVer,
+                                        forId: ""
+                                    }),
+                                    childs: [{
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "J",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: []
+                                        }, {
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "K",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: []
+                                        },
+                                        {
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "L",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: []
+                                        },
+                                        {
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "M",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: []
+                                        },
+                                        {
+                                            jUIView: new jUI.Label({
+                                                classModifier: "label",
+                                                text: "N-Z",
+                                                layout: jUI.Layout.ltFollowVer,
+                                                forId: ""
+                                            }),
+                                            childs: [{
+                                                    jUIView: new jUI.Label({
+                                                        classModifier: "label",
+                                                        text: "N",
+                                                        layout: jUI.Layout.ltFollowVer,
+                                                        forId: ""
+                                                    }),
+                                                    childs: []
+                                                },
+                                                {
+                                                    jUIView: new jUI.Label({
+                                                        classModifier: "label",
+                                                        text: "O-Z",
+                                                        layout: jUI.Layout.ltFollowVer,
+                                                        forId: ""
+                                                    }),
+                                                    childs: [{
+                                                        jUIView: new jUI.Label({
+                                                            classModifier: "label",
+                                                            text: "O",
+                                                            layout: jUI.Layout.ltFollowVer,
+                                                            forId: ""
+                                                        }),
+                                                        childs: []
+                                                    }, {
+                                                        jUIView: new jUI.Label({
+                                                            classModifier: "label",
+                                                            text: "P-Z",
+                                                            layout: jUI.Layout.ltFollowVer,
+                                                            forId: ""
+                                                        }),
+                                                        childs: [{
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "P",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: []
+                                                            },
+                                                            {
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "Q",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: []
+                                                            },
+                                                            {
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "R",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: []
+                                                            },
+                                                            {
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "S",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: []
+                                                            },
+                                                            {
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "T",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: []
+                                                            },
+                                                            {
+                                                                jUIView: new jUI.Label({
+                                                                    classModifier: "label",
+                                                                    text: "U-Z",
+                                                                    layout: jUI.Layout.ltFollowVer,
+                                                                    forId: ""
+                                                                }),
+                                                                childs: [{
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "U",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    },
+                                                                    {
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "V",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    },
+                                                                    {
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "W",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    },
+                                                                    {
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "X",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    },
+                                                                    {
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "Y",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    },
+                                                                    {
+                                                                        jUIView: new jUI.Label({
+                                                                            classModifier: "label",
+                                                                            text: "Z",
+                                                                            layout: jUI.Layout.ltFollowVer,
+                                                                            forId: ""
+                                                                        }),
+                                                                        childs: []
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }]
+                                                }
+                                            ]
+                                        }
+                                    ],
+									isSelectable: true
+
+
+
+                                },
+
 
 
                             ]
