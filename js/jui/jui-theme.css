@@ -1,0 +1,885 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Aug 1, 2015, 5:18:24 PM
+    Author     : basem
+*/
+
+/*
+    Class appendings:
+        .no-selection : to make a component not selectable.
+        .disabled : to specify the behaviour of the component when disabled.
+*/
+
+* {
+    outline:none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/*
+===============================================
+General styles start
+===============================================
+*/
+.no-selection{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+/*
+===============================================
+General styles end
+===============================================
+*/
+
+.jui{
+    
+}
+
+
+/*
+===============================================
+jUI.Table styles start
+===============================================
+*/
+
+.jui.table table{
+    border-collapse: collapse;
+}
+
+/*
+===============================================
+jUI.Table styles end
+===============================================
+*/
+
+
+/*
+===============================================
+jUI.Text styles start
+===============================================
+*/
+
+.jui.text {
+    
+}
+/*
+.jui.text.no-selection{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+*/
+
+/*
+===============================================
+jUI.Text styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.Window styles start 
+===============================================
+*/
+
+.jui.window, .jui.form{
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.15s linear;
+    -moz-transition: opacity 0.15s linear;
+    -webkit-transition: opacity 0.15s linear;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+}
+.jui.window.in,  .jui.form.in{
+    opacity: 1;
+}
+
+.jui.window.modal{
+    background: #000;
+    opacity: 0;
+    border-radius: 0px;
+    transition: opacity 0.15s linear;
+    -moz-transition: opacity 0.15s linear;
+    -webkit-transition: opacity 0.15s linear;
+    overflow: auto;
+}
+.jui.window.modal.in{
+    opacity: 0.5;
+}
+
+/*
+===============================================
+ jUI.Window styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.Form styles start 
+
+see jUI.Window style for .jui.form and .jui.form.in styles
+===============================================
+*/
+
+.jui.form .title{
+    font-size: 24px;
+    font-weight: 300;
+    color: #1072a0;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.jui.form .title .icon{
+    fill: rgba(0,0,0,0.3);
+}
+
+.jui.form .title svg:hover .icon{
+    fill: #1072a0;
+}
+
+.jui.form .body{
+    padding: 10px;
+}
+
+.jui.form .buttons{
+    padding: 10px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.jui.form .buttons .button{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+/*
+===============================================
+ jUI.Form styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.MessageDialog styles start 
+===============================================
+*/
+
+.jui.form .icon.error{
+    fill: #b43100;
+}
+.jui.form .icon.warning{
+    fill: #e79000;
+}
+.jui.form .icon.information{
+    fill: #005ca2;
+}
+.jui.form .icon.question{
+    fill: #005ca2;
+}
+
+/*
+===============================================
+ jUI.MessageDialog  styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.Button styles start 
+===============================================
+*/
+.jui.button  {
+    border-radius: 3px;
+    border:1px solid #25729a; 
+    font-size:12px;
+/*    font-family:arial, helvetica, sans-serif; 
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+    font-weight:bold; */
+    padding: 8px 13px; 
+    color: #FFFFFF;
+    background-color: #3093c7; 
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#3093c7), to(#1c5a85));
+    background-image: -webkit-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -moz-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -ms-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -o-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: linear-gradient(to bottom, #3093c7, #1c5a85);
+}
+
+.jui.button:hover{
+    border:1px solid #1c5675;
+    background-color: #26759e; 
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#26759e), to(#133d5b));
+    background-image: -webkit-linear-gradient(top, #26759e, #133d5b);
+    background-image: -moz-linear-gradient(top, #26759e, #133d5b);
+    background-image: -ms-linear-gradient(top, #26759e, #133d5b);
+    background-image: -o-linear-gradient(top, #26759e, #133d5b);
+    background-image: linear-gradient(to bottom, #26759e, #133d5b);
+}
+
+.jui.button:active  {
+    border:1px solid #25729a; 
+    background-color: #3093c7; 
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#3093c7), to(#1c5a85));
+    background-image: -webkit-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -moz-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -ms-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -o-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: linear-gradient(to bottom, #3093c7, #1c5a85);
+}
+
+
+.jui.button .jui.text, .jui.toolbutton .jui.text {
+    margin: 0px 5px;
+}
+
+/*
+===============================================
+ jUI.Button styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.ToolBar styles start
+===============================================
+*/
+
+.jui.toolbar {
+    background-color: #2C92C1;
+}
+.jui.toolbar .jui.tooldock {
+    padding: 1px;
+}
+.jui.toolbar .jui.tooldock li{
+    padding: 3px 10px;
+    margin-right: 1px;
+}
+.jui.toolbar .jui.toolbutton{
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+}
+.jui.toolbar .jui.toolbutton:hover{
+    background-color: rgba(255,255,255,0);
+}
+
+.jui.toolbar .jui.toolbutton .jui.icon{
+    fill: #fff;
+}
+
+/*
+===============================================
+ jUI.ToolBar styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.TabBar styles start
+===============================================
+*/
+
+.jui.tabbar {
+    overflow: hidden;
+    background-color: rgba(40, 41, 44, 0.1); 
+}
+.jui.tabbar .jui.tooldock {
+    padding: 3px;
+}
+.jui.tabbar .jui.button{
+    padding: 5px;
+    margin: 2px;
+    border: none;
+    border-radius: 0px;
+    background: rgba(0,0,0,0.1);
+}
+.jui.tabbar .jui.button:hover{
+    border: none;
+    margin: 2px;
+    background: rgba(0,0,0,0.2);
+}
+.jui.tabbar .jui.button .jui.icon{
+    fill: #fff;
+}
+.jui.tabpage{
+}
+.jui.tabbar.tab{
+    border-radius: 3px;
+    margin-left: 3px;
+    font-size:12px;
+    padding: 3px 10px; 
+    color: #74777B;
+    background-color: #F7F7F7; 
+    transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
+    -moz-transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
+    -webkit-transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
+}
+.jui.tabbar.tab:hover {
+    color: #2C92C1;
+}
+.jui.tabbar.tab.active{
+    background-color: #2C92C1; 
+    color: #fff;
+}
+.jui.tabbar.tab .jui.tabclosebtn{
+    border-radius:  2px;
+    padding: 2px;
+}
+.jui.tabbar.tab .jui.tabclosebtn .jui.icon{
+    fill: #74777B;
+    transition: fill 0.2s ease 0s;
+    -moz-transition: fill 0.2s ease 0s;
+    -webkit-transition: fill 0.2s ease 0s;
+}
+.jui.tabbar.tab:hover .jui.tabclosebtn .jui.icon{
+    fill: #2C92C1;
+}
+.jui.tabbar.tab.active .jui.tabclosebtn .jui.icon{
+    fill: #fff;
+}
+.jui.tabbar.tab .jui.tabclosebtn:hover .jui.icon{
+    fill: #fff;
+}
+.jui.tabbar.tab .jui.tabclosebtn:hover{
+    padding: 1px;
+    border:1px solid #1c5675;
+    background-color: #26759e; 
+}
+.jui.tabbar.tab .jui.tabclosebtn:active{
+}
+.jui.tabpagecontroller{
+    
+}
+
+/*
+===============================================
+ jUI.TabBar styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.DBComponent styles start
+===============================================
+*/
+
+.jui.dbcomponent{
+    
+}
+
+/*
+===============================================
+ jUI.DBComponent styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.List styles start
+===============================================
+*/
+
+.jui.list{
+    background: #FFF; 
+}
+
+.jui.list table{
+    padding: 0px;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+.jui.list tr{
+    color: #264F63;
+}
+
+.jui.list tr:nth-child(odd){
+    background: #F5F5F5;
+}
+
+.jui.list tr:hover{
+    background: rgba(44, 146, 193, 0.08);
+    color: #03618D;
+}
+
+.jui.list tr.selected{
+    background: rgba(44, 146, 193, 0.22);
+    color: #03618D;
+}
+
+.jui.list td {
+    padding: 10px 15px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+
+/*
+===============================================
+ jUI.List styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.Grid styles start
+===============================================
+*/
+
+.jui.grid{
+    border:1px solid #b2c0cd; 
+    background: #FFF;
+}
+
+.jui.grid table{
+    padding: 0px;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+.jui.grid tbody tr{
+    color: #264F63;
+}
+
+.jui.grid tbody tr:nth-child(odd){
+    background: #F5F5F5;
+}
+
+.jui.grid tbody tr:hover{
+    background: rgba(44, 146, 193, 0.08);
+    color: #03618D;
+}
+
+.jui.grid tbody tr.selected{
+    background: rgba(44, 146, 193, 0.22);
+    color: #03618D;
+}
+
+.jui.grid thead tr{
+    font-weight: bold;
+    color: #fff;
+    background: #2C92C1;
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    border-bottom: 1px solid #1072a0
+}
+
+.jui.grid td, .jui.grid th{
+    padding: 10px 15px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.jui.grid td .jui.checkbox{
+    fill: rgba(50, 114, 144, 0.85);
+}
+
+.jui.grid th .jui.checkbox{
+    fill: #fff;
+}
+
+/*
+===============================================
+ jUI.Grid styles end
+===============================================
+*/
+
+/*
+===============================================
+ Input compoenent general styles start
+===============================================
+*/
+
+
+.jui.input{
+    color: #555;
+}
+
+.jui.input:focus{
+    border:1px solid #2c92c1;
+    box-shadow: 0px 0px 3px #2c92c1 ;
+    -webkit-box-shadow: 0px 0px 3px #2C92C1;
+    -moz-box-shadow: 0px 0px 3px #2C92C1;
+}
+
+/*
+===============================================
+ Input compoenent general styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.TextField styles start
+===============================================
+*/
+
+.jui.textfield{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    border-radius: 4px;
+    padding: 7px 10px;
+}
+/*
+===============================================
+ jUI.TextField styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.TextArea styles start
+===============================================
+*/
+
+.jui.textarea{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    border-radius: 4px;
+    padding: 7px 10px;
+}
+
+/*
+===============================================
+ jUI.TextArea styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.Checkbox & jUI.Radio start
+===============================================
+*/
+
+.jui.checkbox, .jui.radio{
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0);
+    padding: 5px 5px;
+    cursor: default;
+    overflow: hidden;
+}
+
+.jui.checkbox .jui.icon, .jui.radio .jui.icon{
+    fill: #b2c0cd;
+}
+
+.jui.checkbox.checked .jui.icon, .jui.radio.checked .jui.icon{
+    fill: #2C92C1;
+    
+}
+
+/*
+===============================================
+ jUI.Checkbox & jUI.Radio styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.Select & jUI.DatetimePicker start
+===============================================
+*/
+
+.jui.select, .jui.datetimepicker{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    border-radius: 4px;
+    padding: 7px 10px;
+    cursor: default;
+    overflow: hidden;
+}
+
+.jui.select .jui.icon, .jui.datetimepicker .jui.icon{
+    fill: #b2c0cd;
+}
+
+
+.jui.select:focus .jui.icon, .jui.datetimepicker:focus .jui.icon{
+    fill: #2c92c1;
+}
+
+.jui.selectmenu , .jui.datetimepickermenu{
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    -moz-transition: opacity 0.1s ease-in-out;
+    -webkit-transition: opacity 0.1s ease-in-out;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+}
+.jui.selectmenu.in, .jui.datetimepickermenu.in{
+    opacity: 1;
+}
+
+.jui.table.datetimepickertbl {
+    padding: 15px;
+}
+
+.jui.table.datetimepickertbl td{
+    width: 20px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 7px;
+}
+
+.jui.table.datetimepickertbl td.notcurrmonth{
+    opacity: 0.3;
+}
+
+.jui.table.datetimepickertbl td.currmonth:hover{
+    background: rgba(44, 146, 193, 0.08);
+    color: #03618D;
+    cursor: pointer;
+}
+
+.jui.table.datetimepickertbl td.selected{
+    background: rgba(44, 146, 193, 0.08);
+}
+
+.jui.table.datetimepickertbl td.today{
+    color: #ff3600;
+    font-weight: bold;
+}
+
+.jui.table.datetimepickertbl .jui.icon{
+    fill: #b2c0cd;
+}
+.jui.table.datetimepickertbl svg:hover .jui.icon{
+    fill: #2c92c1;
+}
+
+/*
+===============================================
+ jUI.Select styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.Loader start
+===============================================
+*/
+
+.jui.loader{
+    border-radius: 4px;
+}
+
+.jui.loader .circle{
+    fill-opacity: 0.2;
+    fill: #fff;
+}
+.jui.loader .indicator{
+    fill: #fff;
+}
+
+
+/*
+===============================================
+ jUI.Loader styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.SplitPanel start
+===============================================
+*/
+
+.jui.splitpanel{
+}
+.jui.splitpanel table{
+    padding: 0px;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+.jui.splitpanel .jui.panel1, .jui.splitpanel .jui.panel2{
+}
+
+.jui.splitpanel .jui.splitter{
+    background: rgba(0,0,0,0.05);
+}
+
+.jui.splitpanel .jui.splitter .jui.icon{
+    fill: #2C92C1;
+}
+
+/*
+===============================================
+ jUI.SplitPanel styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.ProgressBar start
+===============================================
+*/
+
+.jui.progressbar{
+    padding: 3px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #D7D7D7;
+}
+
+.jui.progressbar .jui.cover{
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+/*
+===============================================
+ jUI.ProgressBar styles end
+===============================================
+*/
+
+/*
+===============================================
+ jUI.SlideBar start
+===============================================
+*/
+
+.jui.slidebar{
+    padding: 3px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.jui.slidebar .jui.bar{
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #D7D7D7;
+}
+
+.jui.slidebar .jui.bar .jui.cover{
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+.jui.slidebar .jui.slidebutton{
+    background-color: #2C92C1;
+    border-radius: 4px;
+}
+/*
+===============================================
+ jUI.SlideBar styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.PanelList start
+===============================================
+*/
+
+.jui.panellist{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    background: #FFF;
+    padding: 2px;
+}
+
+.jui.panellist .jui.panellabel{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    border-radius: 4px;
+    padding: 7px 10px;
+    cursor: pointer;
+    overflow: hidden;
+    color: #264F63;
+    transition: top 0.2s;
+    -moz-transition: top 0.2s;
+    -webkit-transition: top 0.2s;
+}
+
+.jui.panellist .jui.panellabel .jui.icon{
+    fill: #b2c0cd;
+}
+
+
+.jui.panellist .jui.panellabel:focus .jui.icon{
+    fill: #2c92c1;
+}
+
+
+.jui.panellist .jui.panel{
+    background-color: #fff;
+    border-radius: 2px;
+    margin-bottom: 2px;
+    transition: height 0.2s, top 0.2s;
+    -moz-transition: height 0.2s, top 0.2s;
+    -webkit-transition: height 0.2s,top 0.2s;
+}
+
+/*
+===============================================
+ jUI.PanelList styles end
+===============================================
+*/
+
+
+/*
+===============================================
+ jUI.Tree start
+===============================================
+*/
+
+.jui.tree{
+    border:1px solid rgba(144, 162, 171, 0.29);
+    background: #FFF;
+    color: #264F63;
+    overflow: auto;
+    padding: 5px;
+}
+.jui.tree .jui.treenode{
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.jui.tree ul{
+    overflow: hidden;
+    margin: 0px;
+}
+
+.jui.tree .jui.icon{
+    fill: #b2c0cd;
+}
+
+.jui.tree.checked .jui.icon{
+    fill: #2C92C1;
+    
+}
+
+/*
+===============================================
+ jUI.Tree styles end
+===============================================
+*/

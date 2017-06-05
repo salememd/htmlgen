@@ -10,11 +10,11 @@
 
     <title>Libya Guide</title>
 
-    <link type="text/css" rel="stylesheet" href="http://solartracksystem.com:62231/banking/js/jui/jui-theme.css?v=1.1" />
-    <link type="text/css" rel="stylesheet" href="http://solartracksystem.com:62231/banking/css/style.css?v=1.1" />
-    <link type="text/css" rel="stylesheet" href="http://solartracksystem.com:62231/banking/css/en.css?v=1.1" />
+    <link type="text/css" rel="stylesheet" href="js/jui/jui-theme.css?v=1.1" />
+    <link type="text/css" rel="stylesheet" href="css/style.css?v=1.1" />
+    <link type="text/css" rel="stylesheet" href="css/en.css?v=1.1" />
 
-    <script src="http://solartracksystem.com:62231/banking/js/jui/jui-core.js?v=1.1" type="text/javascript"></script>
+    <script src="js/jui/jui-core.js?v=1.1" type="text/javascript"></script>
     <style>
         .tree li {
             list-style: none;
@@ -31,9 +31,9 @@
         };
     </script>
 
-    <script src="http://solartracksystem.com:62231/banking/js/jui/jui-components.js?v=1.1" type="text/javascript"></script>
-    <script src="http://solartracksystem.com:62231/banking/js/jui/jui-window.js?v=1.1" type="text/javascript"></script>
-    <script src="http://solartracksystem.com:62231/banking/js/jui/extra-components/jui-components.js?v=1.1" type="text/javascript"></script>
+    <script src="js/jui/jui-components.js?v=1.1" type="text/javascript"></script>
+    <script src="js/jui/jui-window.js?v=1.1" type="text/javascript"></script>
+    <script src="js/jui/extra-components/jui-components.js?v=1.1" type="text/javascript"></script>
 
     <script>
         (function() {
@@ -68,304 +68,18 @@
 
                 };
 
-                jUI.Tree.prototype.leafs = function(nodes, parent = null, isSelectable = false) {
+                jUI.Tree.prototype.leafs = function(nodes) {
 
-                    var obj = this;
-					if(this.__V.Tree.Nodes.length == 0){
-					      this.__V.Tree.Nodes = nodes;
-
-					}
+                        this.__V.Tree.Nodes = nodes;
+                  
 
                     for (var i = 0; i < nodes.length; i++) {
 
-                        var nodeDom = document.createElement("li");
+                        nodes[i]._setTree(this);
 
-                        nodes[i].jUIView.__V.el.style.float = "none";
-                        nodes[i].jUIView.__V.el.style.display = "inline";
+                        this.__V.el.appendChild(nodes[i].__V.el);
 
 
-                        if (nodes[i].childs.length > 0) {
-
-
-
-                            // Multi selection part
-
-                            if (nodes[i].isSelectable == true || isSelectable == true) {
-							nodes[i].isSelectable = true;
-                                var select = document.createElement("input");
-                                select.setAttribute("type", "checkbox");
-                                nodes[i].selectDom = select;
-
-                                select.addEventListener("change", function() {
-                                    var checkObj = this;
-
-                                    if (this.checked == true) {
-
-                                        (function searchForNode(t) {
-                                            for (var j = 0; j < t.length; j++) {
-
-                                                searchForNode(t[j].childs);
-
-                                                if (t[j].selectDom == checkObj) {
-
-
-                                                    (function select(t) {
-
-                                                        if (t.length == 0) {
-                                                            return;
-                                                        }
-                                                        for (var i = 0; i < t.length; i++) {
-                                                            if (t[i].selectDom.checked == false) {
-
-                                                                select(t[i].childs);
-
-                                                                var check = false;
-                                                                for (j = 0; j < obj.__V.Tree.selected.length; j++)
-                                                                    if (obj.__V.Tree.selected[j] == t[i])
-                                                                        check = true;
-
-                                                                if (t[i].childs.length == 0 && check == false)
-                                                                    obj.__V.Tree.selected.push(t[i])
-
-                                                                t[i].selectDom.checked = true;
-                                                            }
-                                                        }
-
-                                                    })(t[j].childs);
-
-
-                                                }
-
-                                            }
-
-
-                                        })(obj.__V.Tree.Nodes);
-
-
-
-
-                                    } else {
-
-                                        var last = true;
-
-                                        (function searchForNode(t) {
-                                            for (var j = 0; j < t.length; j++) {
-                                                searchForNode(t[j].childs);
-                                                if (t[j].selectDom == checkObj) {
-
-                                                    (function unselect(t) {
-
-                                                        if (t.length == 0) {
-                                                            return;
-                                                        }
-                                                        for (var i = 0; i < t.length; i++) {
-
-                                                            if (t[i].selectDom.checked == true) {
-                                                                unselect(t[i].childs);
-                                                                for (j = 0; j < obj.__V.Tree.selected.length; j++)
-                                                                    if (obj.__V.Tree.selected[j] == t[i])
-                                                                        obj.__V.Tree.selected.splice(j, 1);
-
-                                                                t[i].selectDom.checked = false;
-
-
-                                                            }
-
-
-                                                        }
-
-                                                    })(t[j].childs);
-
-
-                                                }
-
-                                            }
-
-
-                                        })(obj.__V.Tree.Nodes);
-
-
-
-                                    }
-                                    /**** DEBUG ****/
-                                    var s = "";
-                                    obj.__V.Tree.selected.forEach(function(item) {
-                                        s += item.jUIView.__V.Label.text + ", ";
-                                    });
-                                    alert("Selected:" + s);
-                                    /**************/
-                                });
-
-                            }
-
-
-                            var subnode = document.createElement("ul");
-                            var toggle = document.createElement("input");
-                            toggle.setAttribute("type", "checkbox");
-
-                            toggle.addEventListener("change", function() {
-
-                                var checkObj = this;
-                                if (this.checked == true) {
-
-                                    (function searchForNode(t) {
-                                        for (var j = 0; j < t.length; j++) {
-
-                                            searchForNode(t[j].childs);
-
-                                            if (t[j].expandDom == checkObj) {
-
-                                                t[j].subnodeDom.style.display = "block";
-
-                                            }
-
-                                        }
-
-
-                                    })(obj.__V.Tree.Nodes);
-
-                                } else {
-
-                                    (function searchForNode(t) {
-                                        for (var j = 0; j < t.length; j++) {
-
-                                            searchForNode(t[j].childs);
-
-                                            if (t[j].expandDom == checkObj) {
-                                                t[j].subnodeDom.style.display = "none";
-
-                                            }
-
-                                        }
-
-
-                                    })(obj.__V.Tree.Nodes);
-                                }
-                            });
-
-                            if (nodes[i].isExpanded == true) {
-                                toggle.checked = true;
-                            } else {
-                                subnode.style.display = "none";
-                            }
-
-                            var checkView = document.createElement("lable");
-                            nodeDom.appendChild(toggle);
-
-                            nodeDom.appendChild(checkView);
-                            if (nodes[i].isSelectable == true || isSelectable == true) {
-                                nodeDom.appendChild(select);
-                            }
-                            nodeDom.appendChild(nodes[i].jUIView.__V.el);
-                            nodeDom.appendChild(subnode);
-
-                            nodes[i].subnodeDom = subnode;
-                            nodes[i].expandDom = toggle;
-
-
-                        } else {
-
-
-                            if (nodes[i].isSelectable == true || isSelectable == true) {
-							nodes[i].isSelectable = true;
-                                var select = document.createElement("input");
-                                select.setAttribute("type", "checkbox");
-                                nodes[i].selectDom = select;
-
-                                select.addEventListener("change", function() {
-                                    var checkObj = this;
-
-                                    if (this.checked == true) {
-
-
-                                        (function searchForNode(t) {
-                                            for (var j = 0; j < t.length; j++) {
-                                                searchForNode(t[j].childs);
-                                                if (t[j].selectDom == checkObj) {
-
-                                                    obj.__V.Tree.selected.push(t[j]);
-
-                                                }
-
-                                            }
-
-
-                                        })(obj.__V.Tree.Nodes);
-
-
-
-
-                                    } else {
-
-                                        (function searchForNode(t) {
-                                            for (var j = 0; j < t.length; j++) {
-                                                searchForNode(t[j].childs);
-                                                if (t[j].selectDom == checkObj) {
-
-                                                    obj.__V.Tree.selected.splice(j, 1);
-
-                                                }
-
-                                            }
-
-
-                                        })(obj.__V.Tree.selected);
-
-                                    }
-
-                                    /**** DEBUG ****/
-                                    var s = "";
-                                    obj.__V.Tree.selected.forEach(function(item) {
-                                        s += item.jUIView.__V.Label.text + ", ";
-                                    });
-                                    alert("Selected:" + s);
-                                    /**************/
-                                    /*
-									 var c = 0;
-									 (function searchForNode(t) {
-									 if(t.childs.length > 0){
-									 searchForNode(t[j].childs);
-									 if(c == 0)
-									 t[j].selectDom.checked = true;
-									 }
-                                            for (var j = 0; j < t.length; j++) {
-                                                
-                                                if (t[j].selectDom.checked == true) {
-												
-                                                }else{
-												c = 1;
-												}
-
-                                            }
-
-
-                                        })(obj.__V.Tree.Nodes);
-*/
-                                });
-
-
-                                nodeDom.appendChild(select);
-
-
-                            }
-
-
-
-                            nodeDom.appendChild(nodes[i].jUIView.__V.el);
-
-                        }
-
-                        if (parent == null) {
-
-                            this.__V.el.appendChild(nodeDom);
-
-                        } else {
-						
-                            parent.appendChild(nodeDom);
-                        }
-
-
-                        this.leafs(nodes[i].childs, subnode, nodes[i].isSelectable);
                     }
 
 
@@ -373,23 +87,280 @@
 
 
 
-                jUI.Tree.prototype.getLeafs = function() {
+
+                jUI.Tree.prototype._getNode = function(checkObj, t = this.__V.Tree.Nodes) {
+                    for (var j = 0; j < t.length; j++) {
+                        a = this._getNode(checkObj, t[j].__V.Node.childs);
+                        if (t[j].__V.Node.selectDom == checkObj) {
+                            this.node = t[j];
+                            break;
+                        }
+                        if (t[j].__V.Node.expandDom == checkObj) {
+                            this.node = t[j];
+                            break;
+                        }
+                    }
+                    return this.node;
+                };
+
+
+
+
+                jUI.Tree.prototype.selectNode = function(node) {
+                    var t = node.__V.Node.childs;
+
+                    if (t.length == 0) {
+                        this.__V.Tree.selected.push(node)
+                        return;
+                    }
+                    for (var i = 0; i < t.length; i++) {
+                        if (t[i].__V.Node.selectDom.checked == false) {
+
+                            this.selectNode(t[i]);
+
+                            var check = false;
+                            for (var j = 0; j < this.__V.Tree.selected.length; j++)
+                                if (this.__V.Tree.selected[j] == t[i])
+                                    check = true;
+
+                            if (t[i].__V.Node.childs.length == 0 && check == false)
+                                this.__V.Tree.selected.push(t[i])
+
+                            t[i].__V.Node.selectDom.checked = true;
+                        }
+                    }
+
+                };
+
+
+                jUI.Tree.prototype.unSelectNode = function(node) {
+                    var t = node.__V.Node.childs;
+                    if (t.length == 0) {
+                        for (var j = 0; j < this.__V.Tree.selected.length; j++)
+                            if (this.__V.Tree.selected[j] == node)
+                                this.__V.Tree.selected.splice(j, 1);
+                        return;
+                    }
+                    for (var i = 0; i < t.length; i++) {
+
+                        if (t[i].__V.Node.selectDom.checked == true) {
+                            this.unSelectNode(t[i]);
+                            for (var j = 0; j < this.__V.Tree.selected.length; j++)
+                                if (this.__V.Tree.selected[j] == t[i])
+                                    this.__V.Tree.selected.splice(j, 1);
+
+                            t[i].__V.Node.selectDom.checked = false;
+
+
+                        }
+
+
+                    }
+
+
+                };
+
+
+                jUI.Tree.prototype.getTreeLeafs = function() {
                     return this.__V.Tree.Nodes;
                 };
-				
-				jUI.Tree.prototype.getSelectedNodes = function() {
+
+                jUI.Tree.prototype.getSelectedNodes = function() {
                     return this.__V.Tree.selected;
                 };
 
+
+
                 app.$(jUI.Tree.prototype.__props = app.clone(jUI.Tree.prototype.__props), {
                     leafs: "leafs"
-					
+
                 });
 
                 jUI.Tree.prototype.__events = jUI.Tree.prototype.__events.clone().concat([]);
 
             })();
         })();
+
+
+
+        /* 
+		
+		
+		
+		jUI Tree node 
+		
+		
+		
+		
+		
+		*/
+	
+		
+		
+		
+        (function() {
+            jUI.Tree.Node = function(pa) {
+                if (pa && pa.__loading__) return;
+                var newPa = app.$(app.clone(pa), {
+                    className: "treenode",
+                }, false);
+                var el = document.createElement("li");
+
+                jUI.Layout.call(this, newPa, el);
+            };
+
+            (function() {
+                jUI.Tree.Node.prototype = new jUI.Layout({
+                    __loading__: true
+                });
+                jUI.Tree.Node.prototype.constructor = jUI.Tree.Node;
+
+                jUI.Tree.Node.prototype._initProp = function(pa) {
+                    jUI.Layout.prototype._initProp.call(this, pa);
+                    this.__V.Node = {
+                        text: new jUI.Label({
+                            classModifier: "nodetext",
+                            text: "",
+                            layout: jUI.Layout.ltFollowVer,
+                            forId: ""
+                        }),
+                        isExpanded: false,
+                        isSelectable: false,
+                        childs: [],
+                        treeObj: null,
+
+                    };
+					
+                    this.__V.el.style.float = "";
+                    this.__V.el.style.display = "";
+                    this.__V.el.style.position = "";
+
+
+                };
+
+
+                jUI.Tree.Node.prototype.isExpanded = function(isExpanded) {
+                    this.__V.Node.isExpanded = isExpanded;
+
+                }
+
+				
+                jUI.Tree.Node.prototype.setText = function(text) {
+                    this.__V.Node.text.setText(text);
+                    this.__V.el.appendChild(this.__V.Node.text.__V.el);
+
+
+                }
+
+
+
+                jUI.Tree.Node.prototype._setTree = function(tree) {
+                    this.__V.Node.treeObj = tree;
+                    for (var j = 0; j < this.__V.Node.childs.length; j++) {
+                        this.__V.Node.childs[j]._setTree(tree);
+                    }
+
+                };
+				
+                jUI.Tree.Node.prototype.setChilds = function(a) {
+                    if (a.length == 0) {
+                        return;
+                    }
+                    this.__V.Node.childs = a;
+                    var subnode = document.createElement("ul");
+                    var toggle = document.createElement("input");
+                    toggle.setAttribute("type", "checkbox");
+                    var oj = this;
+
+                    toggle.addEventListener("change", function() {
+                        var obj = oj.__V.Node.treeObj;
+
+                        var checkObj = this;
+                        if (this.checked == true) {
+                            obj._getNode(checkObj).__V.Node.subnodeDom.style.display = "block";
+
+                        } else {
+                            obj._getNode(checkObj).__V.Node.subnodeDom.style.display = "none";
+                        }
+
+                    });
+
+                    if (this.__V.Node.isExpanded == true) {
+                        toggle.checked = true;
+                    } else {
+                        subnode.style.display = "none";
+                    }
+
+                    var checkView = document.createElement("lable");
+                    this.__V.el.appendChild(toggle);
+
+                    this.__V.el.appendChild(checkView);
+                    for (var i = 0; i < a.length; i++) {
+                        subnode.appendChild(a[i].__V.el);
+
+                    }
+
+
+                    this.__V.el.appendChild(subnode);
+
+                    this.__V.Node.subnodeDom = subnode;
+                    this.__V.Node.expandDom = toggle;
+                }
+
+
+
+                jUI.Tree.Node.prototype.isSelectable = function(b) {
+
+                    if (b == true) {
+                        this.__V.Node.isSelectable = true;
+                        var select = document.createElement("input");
+                        select.setAttribute("type", "checkbox");
+                        this.__V.Node.selectDom = select;
+                        var oj = this;
+
+                        select.addEventListener("change", function() {
+                            var checkObj = this
+                            var obj = oj.__V.Node.treeObj;
+
+                            var seleceted = obj._getNode(checkObj);
+                            if (this.checked == true) {
+                                obj.selectNode(seleceted);
+                            } else {
+                                obj.unSelectNode(seleceted);
+                            }
+
+                            /**** DEBUG ****/
+                            var s = "";
+                            obj.__V.Tree.selected.forEach(function(item) {
+                                s += item.__V.Node.text.__V.Label.text + ", ";
+                            });
+                            alert("Selected:" + s);
+                            /**************/
+                        });
+                        this.__V.el.appendChild(select);
+
+                    }
+
+                }
+				
+				
+
+                app.$(jUI.Tree.Node.prototype.__props = app.clone(jUI.Tree.Node.prototype.__props), {
+                    text: "setText",
+                    isExpanded: "isExpanded",
+                    isSelectable: "isSelectable",
+                    childs: "setChilds",
+                });
+
+                jUI.Tree.Node.prototype.__events = jUI.Tree.Node.prototype.__events.clone().concat([
+
+                ]);
+
+
+            })();
+        })();
+
+
 
 
         /* global app, webapp, jUI */
@@ -422,375 +393,112 @@
 
                         new jUI.Tree({
                             leafs: [
-
-                                {
-                                    jUIView: new jUI.Label({
-                                        classModifier: "label",
-                                        text: "A",
-                                        layout: jUI.Layout.ltFollowVer,
-                                        forId: ""
-                                    }),
-                                    childs: [],
-                                    isSelectable: true
-
-
-                                },
-                                {
-                                    jUIView: new jUI.Label({
-                                        classModifier: "label",
-                                        text: "B-E",
-                                        layout: jUI.Layout.ltFollowVer,
-                                        forId: ""
-                                    }),
-                                    childs: [{
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "B-D",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: [{
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "B",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: [],
-
-
-                                                },
-                                                {
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "C-D",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: [{
-                                                            jUIView: new jUI.Label({
-                                                                classModifier: "label",
-                                                                text: "C",
-                                                                layout: jUI.Layout.ltFollowVer,
-                                                                forId: ""
-                                                            }),
-                                                            childs: [],
-
-
-                                                        },
-                                                        {
-                                                            jUIView: new jUI.Label({
-                                                                classModifier: "label",
-                                                                text: "D",
-                                                                layout: jUI.Layout.ltFollowVer,
-                                                                forId: ""
-                                                            }),
-                                                            childs: [],
-
-
-                                                        }
-                                                    ],
-
-
-                                                }
-                                            ],
-
-
-                                        },
-                                        {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "E",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: [],
-
-
-                                        }
-                                    ],
-                                    isExpanded: true,
-                                    isSelectable: true
-
-
-                                },
-                                {
-                                    jUIView: new jUI.Label({
-                                        classModifier: "label",
-                                        text: "F-I",
-                                        layout: jUI.Layout.ltFollowVer,
-                                        forId: ""
-                                    }),
-                                    childs: [{
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "F-H",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: [{
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "F",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: [],
-
-
-                                                },
-                                                {
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "G-H",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: [{
-                                                            jUIView: new jUI.Label({
-                                                                classModifier: "label",
-                                                                text: "G",
-                                                                layout: jUI.Layout.ltFollowVer,
-                                                                forId: ""
-                                                            }),
-                                                            childs: [],
-
-
-                                                        },
-                                                        {
-                                                            jUIView: new jUI.Label({
-                                                                classModifier: "label",
-                                                                text: "H",
-                                                                layout: jUI.Layout.ltFollowVer,
-                                                                forId: ""
-                                                            }),
-                                                            childs: [],
-
-
-                                                        }
-                                                    ],
-
-
-                                                }
-                                            ],
-
-
-                                        },
-                                        {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "I",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: [],
-
-
-                                        }
-                                    ],
-                                    isExpanded: true,
-
-
-                                },
-                                {
-                                    jUIView: new jUI.Label({
-                                        classModifier: "label",
-                                        text: "J-Z",
-                                        layout: jUI.Layout.ltFollowVer,
-                                        forId: ""
-                                    }),
-                                    childs: [{
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "J",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
+                                new jUI.Tree.Node({
+                                    text: "a-f",
+                                    isSelectable: true,
+									isExpanded: true,
+                                    childs: [
+                                        new jUI.Tree.Node({
+                                            text: "a",
+                                            isSelectable: true,
+                                            isExpanded: true,
                                             childs: []
-                                        }, {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "K",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
+                                        }),
+                                        new jUI.Tree.Node({
+                                            text: "b",
+                                            isSelectable: true,
                                             childs: []
-                                        },
-                                        {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "L",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: []
-                                        },
-                                        {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "M",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: []
-                                        },
-                                        {
-                                            jUIView: new jUI.Label({
-                                                classModifier: "label",
-                                                text: "N-Z",
-                                                layout: jUI.Layout.ltFollowVer,
-                                                forId: ""
-                                            }),
-                                            childs: [{
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "N",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: []
-                                                },
-                                                {
-                                                    jUIView: new jUI.Label({
-                                                        classModifier: "label",
-                                                        text: "O-Z",
-                                                        layout: jUI.Layout.ltFollowVer,
-                                                        forId: ""
-                                                    }),
-                                                    childs: [{
-                                                        jUIView: new jUI.Label({
-                                                            classModifier: "label",
-                                                            text: "O",
-                                                            layout: jUI.Layout.ltFollowVer,
-                                                            forId: ""
-                                                        }),
+                                        }),
+                                        new jUI.Tree.Node({
+                                            text: "c-f",
+                                            isSelectable: true,
+                                            childs: [new jUI.Tree.Node({
+                                                text: "c",
+                                                isSelectable: true,
+                                                childs: []
+                                            }), new jUI.Tree.Node({
+                                                text: "d - f",
+                                                isSelectable: true,
+                                                childs: [
+                                                    new jUI.Tree.Node({
+                                                        text: "d",
+                                                        isSelectable: true,
                                                         childs: []
-                                                    }, {
-                                                        jUIView: new jUI.Label({
-                                                            classModifier: "label",
-                                                            text: "P-Z",
-                                                            layout: jUI.Layout.ltFollowVer,
-                                                            forId: ""
-                                                        }),
-                                                        childs: [{
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "P",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: []
-                                                            },
-                                                            {
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "Q",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: []
-                                                            },
-                                                            {
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "R",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: []
-                                                            },
-                                                            {
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "S",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: []
-                                                            },
-                                                            {
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "T",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: []
-                                                            },
-                                                            {
-                                                                jUIView: new jUI.Label({
-                                                                    classModifier: "label",
-                                                                    text: "U-Z",
-                                                                    layout: jUI.Layout.ltFollowVer,
-                                                                    forId: ""
-                                                                }),
-                                                                childs: [{
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "U",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    },
-                                                                    {
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "V",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    },
-                                                                    {
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "W",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    },
-                                                                    {
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "X",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    },
-                                                                    {
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "Y",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    },
-                                                                    {
-                                                                        jUIView: new jUI.Label({
-                                                                            classModifier: "label",
-                                                                            text: "Z",
-                                                                            layout: jUI.Layout.ltFollowVer,
-                                                                            forId: ""
-                                                                        }),
-                                                                        childs: []
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }]
-                                                }
-                                            ]
-                                        }
-                                    ],
-									isSelectable: true
+                                                    }),
+                                                    new jUI.Tree.Node({
+                                                        text: "e",
+                                                        isSelectable: true,
+                                                        childs: []
+                                                    }),
+                                                    new jUI.Tree.Node({
+                                                        text: "f",
+                                                        isSelectable: true,
+                                                        childs: []
+                                                    }),
+                                                ]
+                                            }), ]
+                                        })
+                                    ]
+                                }),
+                                new jUI.Tree.Node({
+                                    text: "g",
+                                    isSelectable: true,
+                                    isExpanded: true,
+                                    childs: []
+                                }),
+                                new jUI.Tree.Node({
+                                    text: "h",
+                                    isSelectable: true,
+                                    isExpanded: true,
+                                    childs: []
+                                }),
+                                new jUI.Tree.Node({
+                                    text: "i - n",
+                                    isSelectable: true,
+                                    childs: [
+                                        new jUI.Tree.Node({
+                                            text: "i",
+                                            isSelectable: true,
+                                            isExpanded: true,
+                                            childs: []
+                                        }),
+                                        new jUI.Tree.Node({
+                                            text: "j",
+                                            isSelectable: true,
+                                            isExpanded: true,
+                                            childs: []
+                                        }),
+                                        new jUI.Tree.Node({
+                                            text: "k - m",
+                                            isSelectable: true,
+                                            isExpanded: true,
+                                            childs: [new jUI.Tree.Node({
+                                                text: "k",
+                                                isSelectable: true,
+                                                isExpanded: true,
+                                                childs: []
+                                            }), new jUI.Tree.Node({
+                                                text: "l",
+                                                isSelectable: true,
+                                                isExpanded: true,
+                                                childs: []
+                                            }), new jUI.Tree.Node({
+                                                text: "m",
+                                                isSelectable: true,
+                                                isExpanded: true,
+                                                childs: []
+                                            })]
+                                        }),
+                                        new jUI.Tree.Node({
+                                            text: "n",
+                                            isSelectable: true,
+                                            isExpanded: true,
+                                            childs: []
+                                        })
 
+                                    ]
+                                })
 
-
-                                },
 
 
 
