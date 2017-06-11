@@ -228,9 +228,13 @@
         };
     })();
     (function(){
-        jUI.Form.prototype = new jUI.Window({__loading__: true});
+    jUI.Form.prototype = new jUI.Window({__loading__: true});
+	
 	jUI.Form.prototype.constructor = jUI.Form;
-        
+	
+	
+	
+    	
         // Overriden Function Start ===========================================
         
         jUI.Form.prototype._initProp = function(pa){

@@ -1,8 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
-
-
 <html xml:lang="en-ly" lang="en-ly" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -31,9 +26,11 @@
         };
     </script>
 
+    <script src="js/jui/jui-icons.js?v=1.1" type="text/javascript"></script>
     <script src="js/jui/jui-components.js?v=1.1" type="text/javascript"></script>
     <script src="js/jui/jui-window.js?v=1.1" type="text/javascript"></script>
     <script src="js/jui/extra-components/jui-components.js?v=1.1" type="text/javascript"></script>
+    <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
         (function() {
@@ -62,16 +59,15 @@
                 jUI.Tree.prototype._initProp = function(pa) {
                     jUI.Layout.prototype._initProp.call(this, pa);
                     this.__V.Tree = {
-                        Nodes: [],
-                        selected: []
+                        Nodes: []
                     };
 
                 };
 
                 jUI.Tree.prototype.leafs = function(nodes) {
 
-                        this.__V.Tree.Nodes = nodes;
-                  
+                    this.__V.Tree.Nodes = nodes;
+
 
                     for (var i = 0; i < nodes.length; i++) {
 
@@ -79,94 +75,33 @@
 
                         this.__V.el.appendChild(nodes[i].__V.el);
 
-
                     }
 
 
                 };
 
 
-
-
-                jUI.Tree.prototype._getNode = function(checkObj, t = this.__V.Tree.Nodes) {
-                    for (var j = 0; j < t.length; j++) {
-                        a = this._getNode(checkObj, t[j].__V.Node.childs);
-                        if (t[j].__V.Node.selectDom == checkObj) {
-                            this.node = t[j];
-                            break;
-                        }
-                        if (t[j].__V.Node.expandDom == checkObj) {
-                            this.node = t[j];
-                            break;
-                        }
-                    }
-                    return this.node;
-                };
-
-
-
-
-                jUI.Tree.prototype.selectNode = function(node) {
-                    var t = node.__V.Node.childs;
-
-                    if (t.length == 0) {
-                        this.__V.Tree.selected.push(node)
-                        return;
-                    }
-                    for (var i = 0; i < t.length; i++) {
-                        if (t[i].__V.Node.selectDom.checked == false) {
-
-                            this.selectNode(t[i]);
-
-                            var check = false;
-                            for (var j = 0; j < this.__V.Tree.selected.length; j++)
-                                if (this.__V.Tree.selected[j] == t[i])
-                                    check = true;
-
-                            if (t[i].__V.Node.childs.length == 0 && check == false)
-                                this.__V.Tree.selected.push(t[i])
-
-                            t[i].__V.Node.selectDom.checked = true;
-                        }
-                    }
-
-                };
-
-
-                jUI.Tree.prototype.unSelectNode = function(node) {
-                    var t = node.__V.Node.childs;
-                    if (t.length == 0) {
-                        for (var j = 0; j < this.__V.Tree.selected.length; j++)
-                            if (this.__V.Tree.selected[j] == node)
-                                this.__V.Tree.selected.splice(j, 1);
-                        return;
-                    }
-                    for (var i = 0; i < t.length; i++) {
-
-                        if (t[i].__V.Node.selectDom.checked == true) {
-                            this.unSelectNode(t[i]);
-                            for (var j = 0; j < this.__V.Tree.selected.length; j++)
-                                if (this.__V.Tree.selected[j] == t[i])
-                                    this.__V.Tree.selected.splice(j, 1);
-
-                            t[i].__V.Node.selectDom.checked = false;
-
-
-                        }
-
-
-                    }
-
-
-                };
 
 
                 jUI.Tree.prototype.getTreeLeafs = function() {
                     return this.__V.Tree.Nodes;
                 };
 
-                jUI.Tree.prototype.getSelectedNodes = function() {
-                    return this.__V.Tree.selected;
+
+                jUI.Tree.prototype.getSelectedNodes = function(nodes = this.__V.Tree.Nodes, set = []) {
+                    var t = nodes;
+
+                    for (var i = 0; i < t.length; i++) {
+                        this.getSelectedNodes(t[i].__V.Node.childs, set);
+                        if (t[i].__V.Node.selectDom.getChecked() == true && t[i].__V.Node.childs.length == 0) {
+                            set.push(t[i]);
+                        }
+
+
+                    }
+
+
+                    return set;
                 };
 
 
@@ -176,7 +111,11 @@
 
                 });
 
-                jUI.Tree.prototype.__events = jUI.Tree.prototype.__events.clone().concat([]);
+                jUI.Tree.prototype.__events = jUI.Tree.prototype.__events.clone().concat([
+                    "onNodeSelectionChange",
+                    "onViewStateChange"
+
+                ]);
 
             })();
         })();
@@ -194,10 +133,10 @@
 		
 		
 		*/
-	
-		
-		
-		
+
+
+
+
         (function() {
             jUI.Tree.Node = function(pa) {
                 if (pa && pa.__loading__) return;
@@ -221,7 +160,7 @@
                         text: new jUI.Label({
                             classModifier: "nodetext",
                             text: "",
-                            layout: jUI.Layout.ltFollowVer,
+                            layout: jUI.Layout.ltFollowHor,
                             forId: ""
                         }),
                         isExpanded: false,
@@ -230,126 +169,247 @@
                         treeObj: null,
 
                     };
-					
-                    this.__V.el.style.float = "";
-                    this.__V.el.style.display = "";
-                    this.__V.el.style.position = "";
+
+                    this.addChildren([this.__V.Node.text]);
+                    this.setVisible(true);
+                    this.setLayout(jUI.Layout.ltFollowVer);
 
 
                 };
 
 
-                jUI.Tree.Node.prototype.isExpanded = function(isExpanded) {
-                    this.__V.Node.isExpanded = isExpanded;
-
-                }
-
-				
                 jUI.Tree.Node.prototype.setText = function(text) {
                     this.__V.Node.text.setText(text);
-                    this.__V.el.appendChild(this.__V.Node.text.__V.el);
+
+                }
+
+                jUI.Tree.Node.prototype.getText = function() {
+                    return this.__V.Node.text.getText();
+
+                }
+
+                /**
+                Collapse or expand the node
+				
+                **/
+                jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
+
+                    if (this.__V.Node.childs.length > 0) {
+                        this.__V.Node.isExpanded = isExpanded;
+
+                        if (isExpanded == true) {
+                            //this.__V.Node.expandDom.setChecked(true);
+                            this.__V.Node.expandDom.__V.Checkbox.checked = true; // using setChecked method will trigger the onCheck event in check box,
+                            this.__V.Node.expandDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom.getCheckIcon());
+                            this.__V.Node.expandDom._appendToClassName("checked");
+                            this.__V.Node.subnodeDom.setVisible(true);
+
+                        } else {
+                            //this.__V.Node.expandDom.setChecked(false);
+
+                            this.__V.Node.expandDom.__V.Checkbox.checked = false; // using setChecked method will trigger the onCheck event in check box,
+                            this.__V.Node.expandDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom._getClearIcon());
+                            this.__V.Node.expandDom._removeFromClassName("checked");
+
+                            this.__V.Node.subnodeDom.setVisible(false);
+
+                        }
+                    }
 
 
                 }
 
 
 
+
+                /**
+                TreeView uses this method to attach it's own object with the node
+				
+                **/
                 jUI.Tree.Node.prototype._setTree = function(tree) {
-                    this.__V.Node.treeObj = tree;
-                    for (var j = 0; j < this.__V.Node.childs.length; j++) {
-                        this.__V.Node.childs[j]._setTree(tree);
+
+                    if (tree instanceof jUI.Tree) {
+
+                        this.__V.Node.treeObj = tree;
+                        for (var j = 0; j < this.__V.Node.childs.length; j++) {
+                            this.__V.Node.childs[j]._setTree(tree);
+                        }
                     }
 
                 };
+
+                /**
+                select/unselect the node and all it's children	
 				
-                jUI.Tree.Node.prototype.setChilds = function(a) {
-                    if (a.length == 0) {
-                        return;
-                    }
-                    this.__V.Node.childs = a;
-                    var subnode = document.createElement("ul");
-                    var toggle = document.createElement("input");
-                    toggle.setAttribute("type", "checkbox");
-                    var oj = this;
+				**/
+                jUI.Tree.Node.prototype.setSelected = function(selected, node = this) {
 
-                    toggle.addEventListener("change", function() {
-                        var obj = oj.__V.Node.treeObj;
+                    var t = node.__V.Node.childs;
 
-                        var checkObj = this;
-                        if (this.checked == true) {
-                            obj._getNode(checkObj).__V.Node.subnodeDom.style.display = "block";
+                    if (selected) {
+                        if (t.length == 0) {
+                            this.__V.Node.selectDom.__V.Checkbox.checked = true; // using setChecked method will trigger the check event in check box,
+                            this.__V.Node.selectDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom.getCheckIcon());
+                            this.__V.Node.selectDom._appendToClassName("checked");
+                            return;
+                        }
+                        for (var i = 0; i < t.length; i++) {
+                            if (t[i].__V.Node.selectDom.getChecked() == false) {
+                                this.setSelected(true, t[i]);
+                                t[i].__V.Node.selectDom.__V.Checkbox.checked = true; // using setChecked method will trigger the check event in check box,
+                                t[i].__V.Node.selectDom.__V._IconLabelComponent.shape.$(t[i].__V.Node.selectDom.getCheckIcon());
+                                t[i].__V.Node.selectDom._appendToClassName("checked");
 
-                        } else {
-                            obj._getNode(checkObj).__V.Node.subnodeDom.style.display = "none";
+
+                            }
                         }
 
-                    });
 
-                    if (this.__V.Node.isExpanded == true) {
-                        toggle.checked = true;
                     } else {
-                        subnode.style.display = "none";
-                    }
 
-                    var checkView = document.createElement("lable");
-                    this.__V.el.appendChild(toggle);
+                        if (t.length == 0) {
+                            this.__V.Node.selectDom.__V.Checkbox.checked = false; // using setChecked method will trigger the check event in check box,
+                            this.__V.Node.selectDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom._getClearIcon());
+                            this.__V.Node.selectDom._removeFromClassName("checked");
+                            return;
+                        }
 
-                    this.__V.el.appendChild(checkView);
-                    for (var i = 0; i < a.length; i++) {
-                        subnode.appendChild(a[i].__V.el);
+                        for (var i = 0; i < t.length; i++) {
 
-                    }
+                            if (t[i].__V.Node.selectDom.getChecked()) {
+                                this.setSelected(false, t[i]);
+                                t[i].__V.Node.selectDom.__V.Checkbox.checked = false; // using setChecked method will trigger the check event in check box,
+                                t[i].__V.Node.selectDom.__V._IconLabelComponent.shape.$(t[i].__V.Node.selectDom._getClearIcon());
+                                t[i].__V.Node.selectDom._removeFromClassName("checked");
 
-
-                    this.__V.el.appendChild(subnode);
-
-                    this.__V.Node.subnodeDom = subnode;
-                    this.__V.Node.expandDom = toggle;
-                }
-
-
-
-                jUI.Tree.Node.prototype.isSelectable = function(b) {
-
-                    if (b == true) {
-                        this.__V.Node.isSelectable = true;
-                        var select = document.createElement("input");
-                        select.setAttribute("type", "checkbox");
-                        this.__V.Node.selectDom = select;
-                        var oj = this;
-
-                        select.addEventListener("change", function() {
-                            var checkObj = this
-                            var obj = oj.__V.Node.treeObj;
-
-                            var seleceted = obj._getNode(checkObj);
-                            if (this.checked == true) {
-                                obj.selectNode(seleceted);
-                            } else {
-                                obj.unSelectNode(seleceted);
                             }
 
-                            /**** DEBUG ****/
-                            var s = "";
-                            obj.__V.Tree.selected.forEach(function(item) {
-                                s += item.__V.Node.text.__V.Label.text + ", ";
-                            });
-                            alert("Selected:" + s);
-                            /**************/
+                        }
+                    }
+
+                };
+
+
+
+                // TO DO add child || multi children 
+                jUI.Tree.Node.prototype.addChild = function(node) {
+
+                    var childSet = [];
+
+                    if (node instanceof Array) {
+                        childSet = node;
+
+                    } else if (node instanceof jUI.Tree.Node) {
+                        childSet.push(node)
+
+                    } else {
+                        throw new Error("Uncomaptable");
+                    }
+
+
+                    if (childSet.length == 0) {
+                        return;
+                    }
+
+                    if (typeof this.__V.Node.subnodeDom !== "undefined") {
+                        this.__V.Node.subnodeDom.addChildren(childSet);
+                        this.__V.Node.childs = this.__V.Node.childs.concat(childSet);
+                        return;
+                    }
+
+
+                    this.__V.Node.childs = childSet;
+
+                    var subnode = new jUI.Layout({
+                        visible: true,
+                        layout: jUI.Layout.ltFollowHor,
+
+                    }, document.createElement("ul"));
+
+                    var oj = this;
+
+                    var toggle = new jUI.Checkbox({
+                        checked: this.__V.Node.isExpanded,
+                        layout: jUI.Layout.ltFollowHor,
+                        readOnly: false,
+                        label: "",
+                        events: {
+                            check: function(state) {
+                                oj.setExpanded(state);
+                                oj.__V.Node.treeObj._doEvent("onViewStateChange", oj);
+                            }
+
+                        }
+                    });
+
+
+                    subnode.addChildren(childSet);
+
+                    this.__V.Node.subnodeDom = subnode;
+
+                    this.__V.Node.expandDom = toggle;
+
+                    this.addChildren([toggle, subnode]);
+                    this.setExpanded(this.__V.Node.isExpanded);
+
+
+
+                }
+
+
+                /**
+                control whether the node can be selected or not				
+				
+                **/
+                jUI.Tree.Node.prototype.setSelectable = function(isSelectable) {
+
+                    if (isSelectable == true && this.__V.Node.isSelectable == false) {
+                        this.__V.Node.isSelectable = true;
+                        var oj = this;
+
+                        var select = new jUI.Checkbox({
+                            checked: false,
+                            readOnly: false,
+                            layout: jUI.Layout.ltFollowHor,
+                            label: "",
+                            events: {
+                                check: function(state) {
+
+                                    oj.setSelected(state);
+
+                                    oj.__V.Node.treeObj._doEvent("onNodeSelectionChange", oj);
+
+                                    /**** DEBUG ****/
+                                    var s = "";
+                                    var obj = oj.__V.Node.treeObj;
+                                    obj.getSelectedNodes().forEach(function(item) {
+                                        s += item.__V.Node.text.__V.Label.text + ", ";
+                                    });
+                                    alert("Selected(for testing):" + s);
+                                    /**************/
+                                }
+
+                            }
                         });
-                        this.__V.el.appendChild(select);
+
+                        this.__V.Node.selectDom = select;
+                        this.addChildren([select]);
+
+                    } else if (isSelectable == false && this.__V.Node.isSelectable == true) {
+                        this.__V.Node.selectDom.finalize();
+                        this.__V.Node.isSelectable = false;
 
                     }
 
                 }
-				
-				
+
+
 
                 app.$(jUI.Tree.Node.prototype.__props = app.clone(jUI.Tree.Node.prototype.__props), {
                     text: "setText",
-                    isExpanded: "isExpanded",
-                    isSelectable: "isSelectable",
-                    childs: "setChilds",
+                    children: "addChild",
+                    expanded: "setExpanded",
+                    selectable: "setSelectable",
                 });
 
                 jUI.Tree.Node.prototype.__events = jUI.Tree.Node.prototype.__events.clone().concat([
@@ -395,119 +455,129 @@
                             leafs: [
                                 new jUI.Tree.Node({
                                     text: "a-f",
-                                    isSelectable: true,
-									isExpanded: true,
-                                    childs: [
+                                    selectable: true,
+                                    children: [
                                         new jUI.Tree.Node({
                                             text: "a",
-                                            isSelectable: true,
-                                            isExpanded: true,
-                                            childs: []
+                                            selectable: true,
+                                            children: []
                                         }),
                                         new jUI.Tree.Node({
                                             text: "b",
-                                            isSelectable: true,
-                                            childs: []
+                                            selectable: true,
+                                            children: []
                                         }),
                                         new jUI.Tree.Node({
                                             text: "c-f",
-                                            isSelectable: true,
-                                            childs: [new jUI.Tree.Node({
-                                                text: "c",
-                                                isSelectable: true,
-                                                childs: []
-                                            }), new jUI.Tree.Node({
-                                                text: "d - f",
-                                                isSelectable: true,
-                                                childs: [
-                                                    new jUI.Tree.Node({
-                                                        text: "d",
-                                                        isSelectable: true,
-                                                        childs: []
-                                                    }),
-                                                    new jUI.Tree.Node({
-                                                        text: "e",
-                                                        isSelectable: true,
-                                                        childs: []
-                                                    }),
-                                                    new jUI.Tree.Node({
-                                                        text: "f",
-                                                        isSelectable: true,
-                                                        childs: []
-                                                    }),
-                                                ]
-                                            }), ]
+                                            selectable: true,
+                                            children: [
+                                                new jUI.Tree.Node({
+                                                    text: "c",
+                                                    selectable: true,
+                                                    children: []
+                                                }), new jUI.Tree.Node({
+                                                    text: "d - f",
+                                                    selectable: true,
+                                                    children: [
+                                                        new jUI.Tree.Node({
+                                                            text: "d",
+                                                            selectable: true,
+                                                            children: []
+                                                        }),
+                                                        new jUI.Tree.Node({
+                                                            text: "e",
+                                                            selectable: true,
+                                                            children: []
+                                                        }),
+                                                        new jUI.Tree.Node({
+                                                            text: "f",
+                                                            selectable: true,
+                                                            children: []
+                                                        }),
+                                                    ]
+                                                }),
+                                            ],
+                                            expanded: true,
+
                                         })
-                                    ]
+                                    ],
+                                    expanded: true,
+
                                 }),
                                 new jUI.Tree.Node({
                                     text: "g",
-                                    isSelectable: true,
-                                    isExpanded: true,
-                                    childs: []
+                                    selectable: true,
+                                    expanded: true,
+                                    children: []
                                 }),
                                 new jUI.Tree.Node({
                                     text: "h",
-                                    isSelectable: true,
-                                    isExpanded: true,
-                                    childs: []
+                                    selectable: true,
+                                    expanded: true,
+                                    children: []
                                 }),
                                 new jUI.Tree.Node({
                                     text: "i - n",
-                                    isSelectable: true,
-                                    childs: [
+                                    selectable: true,
+                                    children: [
                                         new jUI.Tree.Node({
                                             text: "i",
-                                            isSelectable: true,
-                                            isExpanded: true,
-                                            childs: []
+                                            selectable: true,
+                                            expanded: true,
+                                            children: []
                                         }),
                                         new jUI.Tree.Node({
                                             text: "j",
-                                            isSelectable: true,
-                                            isExpanded: true,
-                                            childs: []
+                                            selectable: true,
+                                            expanded: true,
+                                            children: []
                                         }),
                                         new jUI.Tree.Node({
                                             text: "k - m",
-                                            isSelectable: true,
-                                            isExpanded: true,
-                                            childs: [new jUI.Tree.Node({
-                                                text: "k",
-                                                isSelectable: true,
-                                                isExpanded: true,
-                                                childs: []
-                                            }), new jUI.Tree.Node({
-                                                text: "l",
-                                                isSelectable: true,
-                                                isExpanded: true,
-                                                childs: []
-                                            }), new jUI.Tree.Node({
-                                                text: "m",
-                                                isSelectable: true,
-                                                isExpanded: true,
-                                                childs: []
-                                            })]
+                                            selectable: true,
+                                            children: [
+                                                new jUI.Tree.Node({
+                                                    text: "k",
+                                                    selectable: true,
+                                                    expanded: true,
+                                                    children: []
+                                                }), new jUI.Tree.Node({
+                                                    text: "l",
+                                                    selectable: true,
+                                                    expanded: true,
+                                                    children: []
+                                                }), new jUI.Tree.Node({
+                                                    text: "m",
+                                                    selectable: true,
+                                                    expanded: true,
+                                                    children: []
+                                                })
+                                            ],
+                                            expanded: true,
+
                                         }),
                                         new jUI.Tree.Node({
                                             text: "n",
-                                            isSelectable: true,
-                                            isExpanded: true,
-                                            childs: []
+                                            selectable: true,
+                                            children: []
                                         })
 
-                                    ]
+                                    ],
+                                    expanded: true,
+
                                 })
 
 
-
-
-                            ]
-
-
-
+                            ],
+                            events: {
+                                onNodeSelectionChange: function(a) {
+                                    alert("User onSelect event: " + a.getText());
+                                },
+                                onViewStateChange: function(a) {
+                                    alert("User onCollaps/expand event: " + a.getText());
+                                }
+                            }
                         })
-
 
                     ]
                 });
