@@ -59,49 +59,44 @@
                 jUI.Tree.prototype._initProp = function(pa) {
                     jUI.Layout.prototype._initProp.call(this, pa);
                     this.__V.Tree = {
-                        Nodes: []
-                    };
+                        rootNode: new jUI.Tree.Node({
+                            text: "",
+                            selectable: false,
+                            children: [],
+                            expanded: false,
+
+                        })
+                    }
 
                 };
 
                 jUI.Tree.prototype.leafs = function(nodes) {
 
-                    this.__V.Tree.Nodes = nodes;
 
+                    this.__V.Tree.rootNode.addChild(nodes);
+                    this.__V.Tree.rootNode._setExpanded(true);
+                    this.__V.Tree.rootNode.__V.Node.expandDom.setVisible(false);
+
+                    this.addChildren([this.__V.Tree.rootNode]);
 
                     for (var i = 0; i < nodes.length; i++) {
-
                         nodes[i]._setTree(this);
-
-                        this.__V.el.appendChild(nodes[i].__V.el);
-
                     }
 
 
-                };
 
+                };
 
 
 
                 jUI.Tree.prototype.getTreeLeafs = function() {
-                    return this.__V.Tree.Nodes;
+                    return this.__V.Tree.rootNode.getChildren();
                 };
 
 
-                jUI.Tree.prototype.getSelectedNodes = function(nodes = this.__V.Tree.Nodes, set = []) {
-                    var t = nodes;
 
-                    for (var i = 0; i < t.length; i++) {
-                        this.getSelectedNodes(t[i].__V.Node.childs, set);
-                        if (t[i].__V.Node.selectDom.getChecked() == true && t[i].__V.Node.childs.length == 0) {
-                            set.push(t[i]);
-                        }
-
-
-                    }
-
-
-                    return set;
+                jUI.Tree.prototype.getSelectedNodes = function() {
+                    return this.__V.Tree.rootNode._getSelectedChildren();
                 };
 
 
@@ -163,14 +158,32 @@
                             layout: jUI.Layout.ltFollowHor,
                             forId: ""
                         }),
+						
                         isExpanded: false,
+						
                         isSelectable: false,
-                        childs: [],
+						
+                        children: [],
                         treeObj: null,
-
+						
+                        expandDom: new jUI.Checkbox({
+                            checked: false,
+                            visible: false,
+                            layout: jUI.Layout.ltFollowHor,
+                            readOnly: false,
+                            label: ""
+                        }),
+						
+                        selectDom: new jUI.Checkbox({
+                            checked: false,
+                            readOnly: false,
+                            visible: false,
+                            layout: jUI.Layout.ltFollowHor,
+                            label: ""
+                        })
                     };
-
-                    this.addChildren([this.__V.Node.text]);
+					
+                    this.addChildren([this.__V.Node.expandDom, this.__V.Node.selectDom, this.__V.Node.text]);
                     this.setVisible(true);
                     this.setLayout(jUI.Layout.ltFollowVer);
 
@@ -181,6 +194,7 @@
                 jUI.Tree.Node.prototype.setText = function(text) {
                     this.__V.Node.text.setText(text);
 
+
                 }
 
                 jUI.Tree.Node.prototype.getText = function() {
@@ -188,30 +202,58 @@
 
                 }
 
+                jUI.Tree.Node.prototype.getChildren = function() {
+                    return this.__V.Node.children;
+
+                }
+
+
+
+
+                jUI.Tree.Node.prototype._getSelectedChildren = function(node = this.getChildren(), set = []) {
+
+                    for (var i = 0; i < node.length; i++) {
+                        node[i]._getSelectedChildren(node[i].getChildren(), set);
+                        if (node[i].__V.Node.selectDom.getChecked() == true && node[i].getChildren().length == 0) {
+                            set.push(node[i]);
+                        }
+                    }
+                    return set;
+                }
+
+
+
                 /**
                 Collapse or expand the node
 				
                 **/
+
                 jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
 
-                    if (this.__V.Node.childs.length > 0) {
-                        this.__V.Node.isExpanded = isExpanded;
+                    if (this.__V.Node.expandDom.getChecked() != isExpanded)
+                        this._setExpanded(isExpanded);
+                }
 
-                        if (isExpanded == true) {
-                            //this.__V.Node.expandDom.setChecked(true);
-                            this.__V.Node.expandDom.__V.Checkbox.checked = true; // using setChecked method will trigger the onCheck event in check box,
-                            this.__V.Node.expandDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom.getCheckIcon());
-                            this.__V.Node.expandDom._appendToClassName("checked");
+
+
+                jUI.Tree.Node.prototype._setExpanded = function(isExpanded) {
+
+                    if (this.getChildren().length > 0) {
+
+
+                        if (isExpanded) {
+                            this.__V.Node.expandDom.setChecked(true);
+
                             this.__V.Node.subnodeDom.setVisible(true);
+                            this.__V.Node.isExpanded = isExpanded;
+
 
                         } else {
-                            //this.__V.Node.expandDom.setChecked(false);
-
-                            this.__V.Node.expandDom.__V.Checkbox.checked = false; // using setChecked method will trigger the onCheck event in check box,
-                            this.__V.Node.expandDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom._getClearIcon());
-                            this.__V.Node.expandDom._removeFromClassName("checked");
+                            this.__V.Node.expandDom.setChecked(false);
 
                             this.__V.Node.subnodeDom.setVisible(false);
+                            this.__V.Node.isExpanded = isExpanded;
+
 
                         }
                     }
@@ -220,6 +262,54 @@
                 }
 
 
+                /**
+                select/unselect the node and all it's children	
+				
+				**/
+
+                jUI.Tree.Node.prototype.setSelected = function(selected) {
+
+                    if (this.__V.Node.selectDom.getChecked() != selected)
+                        this._setSelected(selected)
+
+
+                };
+
+
+                jUI.Tree.Node.prototype._setSelected = function(selected, node = this) {
+
+                    var t = node.getChildren();
+
+                    if (selected) {
+                        if (t.length == 0) {
+                            this.__V.Node.selectDom.setChecked(true);
+                            return;
+                        }
+                        for (var i = 0; i < t.length; i++) {
+                            if (t[i].__V.Node.selectDom.getChecked() == false) {
+                                this._setSelected(true, t[i]);
+                                t[i].__V.Node.selectDom.setChecked(true);
+                            }
+                        }
+
+
+                    } else {
+                        if (t.length == 0) {
+                            this.__V.Node.selectDom.setChecked(false);
+                            return;
+                        }
+
+                        for (var i = 0; i < t.length; i++) {
+                            if (t[i].__V.Node.selectDom.getChecked()) {
+                                this._setSelected(false, t[i]);
+                                t[i].__V.Node.selectDom.setChecked(false);
+
+                            }
+
+                        }
+                    }
+
+                };
 
 
                 /**
@@ -231,63 +321,13 @@
                     if (tree instanceof jUI.Tree) {
 
                         this.__V.Node.treeObj = tree;
-                        for (var j = 0; j < this.__V.Node.childs.length; j++) {
-                            this.__V.Node.childs[j]._setTree(tree);
+                        for (var j = 0; j < this.__V.Node.children.length; j++) {
+                            this.__V.Node.children[j]._setTree(tree);
                         }
                     }
 
                 };
 
-                /**
-                select/unselect the node and all it's children	
-				
-				**/
-                jUI.Tree.Node.prototype.setSelected = function(selected, node = this) {
-
-                    var t = node.__V.Node.childs;
-
-                    if (selected) {
-                        if (t.length == 0) {
-                            this.__V.Node.selectDom.__V.Checkbox.checked = true; // using setChecked method will trigger the check event in check box,
-                            this.__V.Node.selectDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom.getCheckIcon());
-                            this.__V.Node.selectDom._appendToClassName("checked");
-                            return;
-                        }
-                        for (var i = 0; i < t.length; i++) {
-                            if (t[i].__V.Node.selectDom.getChecked() == false) {
-                                this.setSelected(true, t[i]);
-                                t[i].__V.Node.selectDom.__V.Checkbox.checked = true; // using setChecked method will trigger the check event in check box,
-                                t[i].__V.Node.selectDom.__V._IconLabelComponent.shape.$(t[i].__V.Node.selectDom.getCheckIcon());
-                                t[i].__V.Node.selectDom._appendToClassName("checked");
-
-
-                            }
-                        }
-
-
-                    } else {
-
-                        if (t.length == 0) {
-                            this.__V.Node.selectDom.__V.Checkbox.checked = false; // using setChecked method will trigger the check event in check box,
-                            this.__V.Node.selectDom.__V._IconLabelComponent.shape.$(this.__V.Node.selectDom._getClearIcon());
-                            this.__V.Node.selectDom._removeFromClassName("checked");
-                            return;
-                        }
-
-                        for (var i = 0; i < t.length; i++) {
-
-                            if (t[i].__V.Node.selectDom.getChecked()) {
-                                this.setSelected(false, t[i]);
-                                t[i].__V.Node.selectDom.__V.Checkbox.checked = false; // using setChecked method will trigger the check event in check box,
-                                t[i].__V.Node.selectDom.__V._IconLabelComponent.shape.$(t[i].__V.Node.selectDom._getClearIcon());
-                                t[i].__V.Node.selectDom._removeFromClassName("checked");
-
-                            }
-
-                        }
-                    }
-
-                };
 
 
 
@@ -296,7 +336,10 @@
 
                     var childSet = [];
 
-                    if (node instanceof Array) {
+                    if (arguments.length > 1) {
+                        childSet = arguments;
+
+                    } else if (node instanceof Array) {
                         childSet = node;
 
                     } else if (node instanceof jUI.Tree.Node) {
@@ -304,21 +347,28 @@
 
                     } else {
                         throw new Error("Uncomaptable");
-                    }
 
+                    }
 
                     if (childSet.length == 0) {
                         return;
                     }
 
+                    for (var i = 0; i < childSet.length; i++) {
+                        if (childSet[i] instanceof jUI.Tree.Node == false) {
+                            throw new Error("Uncomaptable");
+                        }
+                    }
+
+
                     if (typeof this.__V.Node.subnodeDom !== "undefined") {
                         this.__V.Node.subnodeDom.addChildren(childSet);
-                        this.__V.Node.childs = this.__V.Node.childs.concat(childSet);
+                        this.__V.Node.children = this.__V.Node.children.concat(childSet);
                         return;
                     }
 
 
-                    this.__V.Node.childs = childSet;
+                    this.__V.Node.children = childSet;
 
                     var subnode = new jUI.Layout({
                         visible: true,
@@ -328,29 +378,25 @@
 
                     var oj = this;
 
-                    var toggle = new jUI.Checkbox({
-                        checked: this.__V.Node.isExpanded,
-                        layout: jUI.Layout.ltFollowHor,
-                        readOnly: false,
-                        label: "",
-                        events: {
-                            check: function(state) {
-                                oj.setExpanded(state);
+                    this.__V.Node.expandDom.setVisible(true);
+                    this.__V.Node.expandDom.setChecked(this.__V.Node.isExpanded);
+					
+                    this.__V.Node.expandDom.addEvents({
+                        check: function(state) {
+                            oj._setExpanded(state);
+                            if (oj.__V.Node.treeObj != null) 
                                 oj.__V.Node.treeObj._doEvent("onViewStateChange", oj);
-                            }
-
                         }
                     });
-
 
                     subnode.addChildren(childSet);
 
                     this.__V.Node.subnodeDom = subnode;
 
-                    this.__V.Node.expandDom = toggle;
 
-                    this.addChildren([toggle, subnode]);
-                    this.setExpanded(this.__V.Node.isExpanded);
+                    this.addChildren([subnode]);
+					
+                    this._setExpanded(this.__V.Node.isExpanded);
 
 
 
@@ -367,36 +413,19 @@
                         this.__V.Node.isSelectable = true;
                         var oj = this;
 
-                        var select = new jUI.Checkbox({
-                            checked: false,
-                            readOnly: false,
-                            layout: jUI.Layout.ltFollowHor,
-                            label: "",
-                            events: {
-                                check: function(state) {
-
-                                    oj.setSelected(state);
-
+                        this.__V.Node.selectDom.addEvents({
+                            check: function(state) {
+                                oj._setSelected(state);
+                                if (oj.__V.Node.treeObj != null)
                                     oj.__V.Node.treeObj._doEvent("onNodeSelectionChange", oj);
-
-                                    /**** DEBUG ****/
-                                    var s = "";
-                                    var obj = oj.__V.Node.treeObj;
-                                    obj.getSelectedNodes().forEach(function(item) {
-                                        s += item.__V.Node.text.__V.Label.text + ", ";
-                                    });
-                                    alert("Selected(for testing):" + s);
-                                    /**************/
-                                }
-
                             }
                         });
+						
+                        this.__V.Node.selectDom.setVisible(true);
 
-                        this.__V.Node.selectDom = select;
-                        this.addChildren([select]);
 
                     } else if (isSelectable == false && this.__V.Node.isSelectable == true) {
-                        this.__V.Node.selectDom.finalize();
+						this.__V.Node.selectDom.setVisible(false);
                         this.__V.Node.isSelectable = false;
 
                     }
@@ -408,7 +437,7 @@
                 app.$(jUI.Tree.Node.prototype.__props = app.clone(jUI.Tree.Node.prototype.__props), {
                     text: "setText",
                     children: "addChild",
-                    expanded: "setExpanded",
+                    expanded: "_setExpanded",
                     selectable: "setSelectable",
                 });
 
@@ -454,8 +483,8 @@
                         new jUI.Tree({
                             leafs: [
                                 new jUI.Tree.Node({
-                                    text: "a-f",
                                     selectable: true,
+                                    text: "a-f",
                                     children: [
                                         new jUI.Tree.Node({
                                             text: "a",
