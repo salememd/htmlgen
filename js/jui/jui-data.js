@@ -2408,6 +2408,7 @@
                     sh.$(this.getCheckIcon());
                     this._appendToClassName("checked");
                 }else{
+					
                     sh.$(this._getClearIcon());
                     this._removeFromClassName("checked");
                 }

@@ -8,7 +8,7 @@
     <link type="text/css" rel="stylesheet" href="js/jui/jui-theme.css?v=1.1" />
     <link type="text/css" rel="stylesheet" href="css/style.css?v=1.1" />
     <link type="text/css" rel="stylesheet" href="css/en.css?v=1.1" />
-
+    <link type="text/css" rel="stylesheet" href="tree.css?v=1.1" />
     <script src="js/jui/jui-core.js?v=1.1" type="text/javascript"></script>
     <style>
         .tree li {
@@ -151,6 +151,50 @@
 
                 jUI.Tree.Node.prototype._initProp = function(pa) {
                     jUI.Layout.prototype._initProp.call(this, pa);
+					
+					
+						jUI.Checkbox.prototype.setIcon = function(icon) {
+						  this.__V.Checkbox.icon = icon  ;
+						};
+						
+						
+						jUI.Checkbox.prototype.getCheckIcon = function() {
+						if(this.__V.Checkbox.icon == null){
+						return   app.resources.icons.paths.checkbox;
+						}
+						return this.__V.Checkbox.icon ;
+						
+						};
+							
+						jUI.Checkbox.prototype.setClearIcon = function(icon) {
+					
+						 this.__V.Checkbox.clearIcon = icon ;
+						
+						
+						};
+						jUI.Checkbox.prototype._getClearIcon = function() {
+						if(this.__V.Checkbox.clearIcon == null){
+						return app.resources.icons.paths.checkboxClear;
+						}
+						 return this.__V.Checkbox.clearIcon ;
+						
+						
+						};
+					
+						
+						var expandCheck = new jUI.Checkbox({
+                            checked: undefined,
+                            visible: false,
+                            layout: jUI.Layout.ltFollowHor,
+                            readOnly: false,
+                            label: "",
+							classModifier: "expand"
+                        }); 
+					//	expandCheck._setIcon(new jUI.Shape(app.resources.icons.paths.treeCollaps));
+						//expandCheck._setIcon(new jUI.Shape(app.resources.icons.paths.treeExpand))
+						expandCheck.setIcon(app.resources.icons.paths.treeExpand);
+						expandCheck.setClearIcon(app.resources.icons.paths.treeCollaps);
+
                     this.__V.Node = {
                         text: new jUI.Label({
                             classModifier: "nodetext",
@@ -166,20 +210,17 @@
                         children: [],
                         treeObj: null,
 						
-                        expandDom: new jUI.Checkbox({
-                            checked: false,
-                            visible: false,
-                            layout: jUI.Layout.ltFollowHor,
-                            readOnly: false,
-                            label: ""
-                        }),
+					
+						
+                        expandDom: expandCheck,
 						
                         selectDom: new jUI.Checkbox({
                             checked: false,
                             readOnly: false,
                             visible: false,
                             layout: jUI.Layout.ltFollowHor,
-                            label: ""
+                            label: "",
+							classModifier: "selection"
                         })
                     };
 					
@@ -219,7 +260,7 @@
                         }
                     }
                     return set;
-                }
+                };
 
 
 
@@ -232,16 +273,18 @@
 
                     if (this.__V.Node.expandDom.getChecked() != isExpanded)
                         this._setExpanded(isExpanded);
-                }
+                };
 
 
 
                 jUI.Tree.Node.prototype._setExpanded = function(isExpanded) {
 
+				
                     if (this.getChildren().length > 0) {
-
+					
 
                         if (isExpanded) {
+						
                             this.__V.Node.expandDom.setChecked(true);
 
                             this.__V.Node.subnodeDom.setVisible(true);
@@ -257,9 +300,8 @@
 
                         }
                     }
-
-
-                }
+					
+                };
 
 
                 /**
@@ -331,7 +373,7 @@
 
 
 
-                // TO DO add child || multi children 
+                
                 jUI.Tree.Node.prototype.addChild = function(node) {
 
                     var childSet = [];
@@ -379,11 +421,10 @@
                     var oj = this;
 
                     this.__V.Node.expandDom.setVisible(true);
-                    this.__V.Node.expandDom.setChecked(this.__V.Node.isExpanded);
 					
-                    this.__V.Node.expandDom.addEvents({
+                this.__V.Node.expandDom.addEvents({
                         check: function(state) {
-                            oj._setExpanded(state);
+                           oj._setExpanded(state);
                             if (oj.__V.Node.treeObj != null) 
                                 oj.__V.Node.treeObj._doEvent("onViewStateChange", oj);
                         }
@@ -395,10 +436,10 @@
 
 
                     this.addChildren([subnode]);
+					//this._setExpanded(this.__V.Node.isExpanded);
 					
-                    this._setExpanded(this.__V.Node.isExpanded);
-
-
+				
+    
 
                 }
 
@@ -523,7 +564,8 @@
                                                             selectable: true,
                                                             children: []
                                                         }),
-                                                    ]
+                                                    ],
+													expanded: false
                                                 }),
                                             ],
                                             expanded: true,
