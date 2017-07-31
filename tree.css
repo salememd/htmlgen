@@ -1,7 +1,7 @@
 .jui.checkbox.input.expand, .jui.checkbox.input.selection  {
     border-radius: 0px;
     border: 0px solid rgba(0, 0, 0, 0);
-    padding: 8px 0px;
+    padding: 10px 0px;
     cursor: default;
     overflow: hidden;
 }

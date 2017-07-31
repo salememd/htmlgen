@@ -33,6 +33,7 @@
     <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
+	// fix & add shape , sprate divs , nowrap, scroll, 
         (function() {
 
 
@@ -67,7 +68,9 @@
 
                         })
                     }
-
+					
+					this.setNoWrap(true);
+					
                 };
 
                 jUI.Tree.prototype.leafs = function(nodes) {
@@ -151,80 +154,100 @@
 
                 jUI.Tree.Node.prototype._initProp = function(pa) {
                     jUI.Layout.prototype._initProp.call(this, pa);
+
+
+                    jUI.Checkbox.prototype.setIcon = function(icon) {
+                        this.__V.Checkbox.icon = icon;
+                    };
+
+
+                    jUI.Checkbox.prototype.getCheckIcon = function() {
+                        if (this.__V.Checkbox.icon == null) {
+                            return app.resources.icons.paths.checkbox;
+                        }
+                        return this.__V.Checkbox.icon;
+
+                    };
+
+                    jUI.Checkbox.prototype.setClearIcon = function(icon) {
+
+                        this.__V.Checkbox.clearIcon = icon;
+
+                    };
 					
+                    jUI.Checkbox.prototype._getClearIcon = function() {
+                        if (this.__V.Checkbox.clearIcon == null) {
+                            return app.resources.icons.paths.checkboxClear;
+                        }
+                        return this.__V.Checkbox.clearIcon;
+                    };
+
+                    var container = new jUI.Layout({
+                        visible: true,
+                        layout: jUI.Layout.ltFollowVer, 
+                        parent: this,
+						noWrap: true
+                    });
 					
-						jUI.Checkbox.prototype.setIcon = function(icon) {
-						  this.__V.Checkbox.icon = icon  ;
-						};
-						
-						
-						jUI.Checkbox.prototype.getCheckIcon = function() {
-						if(this.__V.Checkbox.icon == null){
-						return   app.resources.icons.paths.checkbox;
-						}
-						return this.__V.Checkbox.icon ;
-						
-						};
-							
-						jUI.Checkbox.prototype.setClearIcon = function(icon) {
+                    var expandCheck = new jUI.Shape({
+                        path: app.resources.icons.paths.treeExpand,
+                        visible: false,
+                        layout: jUI.Layout.ltFollowHor,
+                        width:18,
+						height:18,
+                        classModifier: "expand",
+                        parent: container,
+                    });
+
+					/*
+					 var expandCheck = new jUI.Checkbox({
+                        checked: undefined,
+                        visible: false,
+                        layout: jUI.Layout.ltFollowHor,
+                        readOnly: false,
+                        label: "",
+                        classModifier: "expand",
+                        parent: container,
+                    });
 					
-						 this.__V.Checkbox.clearIcon = icon ;
-						
-						
-						};
-						jUI.Checkbox.prototype._getClearIcon = function() {
-						if(this.__V.Checkbox.clearIcon == null){
-						return app.resources.icons.paths.checkboxClear;
-						}
-						 return this.__V.Checkbox.clearIcon ;
-						
-						
-						};
-					
-						
-						var expandCheck = new jUI.Checkbox({
-                            checked: undefined,
-                            visible: false,
-                            layout: jUI.Layout.ltFollowHor,
-                            readOnly: false,
-                            label: "",
-							classModifier: "expand"
-                        }); 
-					//	expandCheck._setIcon(new jUI.Shape(app.resources.icons.paths.treeCollaps));
-						//expandCheck._setIcon(new jUI.Shape(app.resources.icons.paths.treeExpand))
-						expandCheck.setIcon(app.resources.icons.paths.treeExpand);
-						expandCheck.setClearIcon(app.resources.icons.paths.treeCollaps);
+
+                    expandCheck.setIcon(app.resources.icons.paths.treeExpand);
+                    expandCheck.setClearIcon(app.resources.icons.paths.treeCollaps);
+*/
 
                     this.__V.Node = {
-                        text: new jUI.Label({
-                            classModifier: "nodetext",
-                            text: "",
-                            layout: jUI.Layout.ltFollowHor,
-                            forId: ""
-                        }),
-						
+
                         isExpanded: false,
-						
+
                         isSelectable: false,
-						
+
                         children: [],
+						
                         treeObj: null,
-						
-					
-						
+
                         expandDom: expandCheck,
-						
+
                         selectDom: new jUI.Checkbox({
                             checked: false,
                             readOnly: false,
                             visible: false,
                             layout: jUI.Layout.ltFollowHor,
                             label: "",
-							classModifier: "selection"
-                        })
+                            classModifier: "selection",
+                            parent: container,
+                        }),
+						
+                        text: new jUI.Label({
+                            classModifier: "nodetext",
+                            text: "",
+                            layout: jUI.Layout.ltFollowHor,
+                            forId: "",
+                            parent: container,
+                        }),
+						
                     };
-					
-                    this.addChildren([this.__V.Node.expandDom, this.__V.Node.selectDom, this.__V.Node.text]);
+
+                   
                     this.setVisible(true);
                     this.setLayout(jUI.Layout.ltFollowVer);
 
@@ -271,7 +294,7 @@
 
                 jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
 
-                    if (this.__V.Node.expandDom.getChecked() != isExpanded)
+                    if (this.__V.Node.expandDom.isExpanded != isExpanded)
                         this._setExpanded(isExpanded);
                 };
 
@@ -279,28 +302,29 @@
 
                 jUI.Tree.Node.prototype._setExpanded = function(isExpanded) {
 
-				
+
                     if (this.getChildren().length > 0) {
-					
+
 
                         if (isExpanded) {
-						
-                            this.__V.Node.expandDom.setChecked(true);
 
-                            this.__V.Node.subnodeDom.setVisible(true);
-                            this.__V.Node.isExpanded = isExpanded;
+                           // this.__V.Node.expandDom.setChecked(true);
+						   this.__V.Node.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
+						   this.__V.Node.subnodeDom.setVisible(true);
+						   this.__V.Node.isExpanded = isExpanded;
 
 
                         } else {
-                            this.__V.Node.expandDom.setChecked(false);
-
+						
+                            //this.__V.Node.expandDom.setChecked(false);
+							this.__V.Node.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
                             this.__V.Node.subnodeDom.setVisible(false);
                             this.__V.Node.isExpanded = isExpanded;
 
 
                         }
                     }
-					
+
                 };
 
 
@@ -373,7 +397,6 @@
 
 
 
-                
                 jUI.Tree.Node.prototype.addChild = function(node) {
 
                     var childSet = [];
@@ -412,20 +435,27 @@
 
                     this.__V.Node.children = childSet;
 
+                    var container = new jUI.Layout({
+                        visible: true,
+                        layout: jUI.Layout.ltFollowVer,  
+                        parent: this,
+						noWrap: true
+                    });
+					
                     var subnode = new jUI.Layout({
                         visible: true,
-                        layout: jUI.Layout.ltFollowHor,
-
+                        layout: jUI.Layout.ltFollowHor, // fix & add shape , sprate divs , nowrap, scroll, 
+                        parent: container,
                     }, document.createElement("ul"));
 
                     var oj = this;
 
                     this.__V.Node.expandDom.setVisible(true);
-					
-                this.__V.Node.expandDom.addEvents({
-                        check: function(state) {
-                           oj._setExpanded(state);
-                            if (oj.__V.Node.treeObj != null) 
+
+                    this.__V.Node.expandDom.addEvents({
+                        click: function() {
+                            oj._setExpanded(!oj.__V.Node.isExpanded);
+                            if (oj.__V.Node.treeObj != null)
                                 oj.__V.Node.treeObj._doEvent("onViewStateChange", oj);
                         }
                     });
@@ -435,11 +465,11 @@
                     this.__V.Node.subnodeDom = subnode;
 
 
-                    this.addChildren([subnode]);
-					//this._setExpanded(this.__V.Node.isExpanded);
-					
-				
-    
+
+                    //this._setExpanded(this.__V.Node.isExpanded);
+
+
+
 
                 }
 
@@ -461,12 +491,12 @@
                                     oj.__V.Node.treeObj._doEvent("onNodeSelectionChange", oj);
                             }
                         });
-						
+
                         this.__V.Node.selectDom.setVisible(true);
 
 
                     } else if (isSelectable == false && this.__V.Node.isSelectable == true) {
-						this.__V.Node.selectDom.setVisible(false);
+                        this.__V.Node.selectDom.setVisible(false);
                         this.__V.Node.isSelectable = false;
 
                     }
@@ -519,6 +549,9 @@
                 return new jUI.Window({
                     width: "100%",
                     height: "100%",
+					_style:{
+					overflow: "auto"
+					},
                     children: [
 
                         new jUI.Tree({
@@ -565,7 +598,7 @@
                                                             children: []
                                                         }),
                                                     ],
-													expanded: false
+                                                    expanded: false
                                                 }),
                                             ],
                                             expanded: true,
