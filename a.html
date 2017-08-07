@@ -15,8 +15,10 @@
         /* global app, webapp */
 
         var webapp = {
+		
 
         };
+		app.dir = "rtl";
         app.main = function() {
             new webapp.Login();
         };
@@ -505,6 +507,8 @@
                             _style: {
                                 overflow: "auto"
                             },
+							width: 500,
+							height: 500,
                             leafs: [
                                 new jUI.Tree.Node({
                                     selectable: true,
