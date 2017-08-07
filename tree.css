@@ -7,15 +7,21 @@
 }
 
 
-.jui.input {
-	
-	border-color: none;
-}
-.jui.input:focus {
+
+.jui.tree .jui.input:focus {
 
     -webkit-box-shadow: none;
 }
 
-.jui.checkbox .jui.icon, .jui.checkbox.checked {
+.jui.tree .jui.checkbox .jui.icon {
     fill: #2C92C1;
+}
+
+ .jui.tree li {
+            list-style: none;
+}
+
+.jui.tree{
+	
+	border: none;
 }

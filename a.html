@@ -10,11 +10,7 @@
     <link type="text/css" rel="stylesheet" href="css/en.css?v=1.1" />
     <link type="text/css" rel="stylesheet" href="tree.css?v=1.1" />
     <script src="js/jui/jui-core.js?v=1.1" type="text/javascript"></script>
-    <style>
-        .tree li {
-            list-style: none;
-        }
-    </style>
+
     <script type="text/javascript">
         /* global app, webapp */
 
@@ -33,14 +29,14 @@
     <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
-	// fix & add shape , sprate divs , nowrap, scroll, 
+        // one function expand/select, css input, limit code 
         (function() {
 
 
             jUI.Tree = function(pa) {
                 if (pa && pa.__loading__) return;
                 var newPa = app.$(app.clone(pa), {
-                    className: "tree",
+                    className: "jui tree",
                     visible: true
                 }, false);
                 var el = document.createElement("ul");
@@ -68,16 +64,16 @@
 
                         })
                     }
-					
-					this.setNoWrap(true);
-					
+
+                    this.setNoWrap(true);
+
                 };
 
                 jUI.Tree.prototype.leafs = function(nodes) {
 
 
                     this.__V.Tree.rootNode.addChild(nodes);
-                    this.__V.Tree.rootNode._setExpanded(true);
+                    this.__V.Tree.rootNode.setExpanded(true);
                     this.__V.Tree.rootNode.__V.Node.expandDom.setVisible(false);
 
                     this.addChildren([this.__V.Tree.rootNode]);
@@ -155,66 +151,13 @@
                 jUI.Tree.Node.prototype._initProp = function(pa) {
                     jUI.Layout.prototype._initProp.call(this, pa);
 
-
-                    jUI.Checkbox.prototype.setIcon = function(icon) {
-                        this.__V.Checkbox.icon = icon;
-                    };
-
-
-                    jUI.Checkbox.prototype.getCheckIcon = function() {
-                        if (this.__V.Checkbox.icon == null) {
-                            return app.resources.icons.paths.checkbox;
-                        }
-                        return this.__V.Checkbox.icon;
-
-                    };
-
-                    jUI.Checkbox.prototype.setClearIcon = function(icon) {
-
-                        this.__V.Checkbox.clearIcon = icon;
-
-                    };
-					
-                    jUI.Checkbox.prototype._getClearIcon = function() {
-                        if (this.__V.Checkbox.clearIcon == null) {
-                            return app.resources.icons.paths.checkboxClear;
-                        }
-                        return this.__V.Checkbox.clearIcon;
-                    };
-
                     var container = new jUI.Layout({
                         visible: true,
-                        layout: jUI.Layout.ltFollowVer, 
+                        layout: jUI.Layout.ltFollowVer,
                         parent: this,
-						noWrap: true
+                        noWrap: true
                     });
 					
-                    var expandCheck = new jUI.Shape({
-                        path: app.resources.icons.paths.treeExpand,
-                        visible: false,
-                        layout: jUI.Layout.ltFollowHor,
-                        width:18,
-						height:18,
-                        classModifier: "expand",
-                        parent: container,
-                    });
-
-					/*
-					 var expandCheck = new jUI.Checkbox({
-                        checked: undefined,
-                        visible: false,
-                        layout: jUI.Layout.ltFollowHor,
-                        readOnly: false,
-                        label: "",
-                        classModifier: "expand",
-                        parent: container,
-                    });
-					
-
-                    expandCheck.setIcon(app.resources.icons.paths.treeExpand);
-                    expandCheck.setClearIcon(app.resources.icons.paths.treeCollaps);
-*/
-
                     this.__V.Node = {
 
                         isExpanded: false,
@@ -222,10 +165,18 @@
                         isSelectable: false,
 
                         children: [],
-						
+
                         treeObj: null,
 
-                        expandDom: expandCheck,
+                        expandDom: new jUI.Shape({
+                            path: "",
+                            visible: true,
+                            layout: jUI.Layout.ltFollowHor,
+                            width: 18,
+                            height: 18,
+                            classModifier: "expand",
+                            parent: container
+                        }),
 
                         selectDom: new jUI.Checkbox({
                             checked: false,
@@ -236,7 +187,7 @@
                             classModifier: "selection",
                             parent: container,
                         }),
-						
+
                         text: new jUI.Label({
                             classModifier: "nodetext",
                             text: "",
@@ -244,10 +195,11 @@
                             forId: "",
                             parent: container,
                         }),
-						
+
+
                     };
 
-                   
+
                     this.setVisible(true);
                     this.setLayout(jUI.Layout.ltFollowVer);
 
@@ -293,39 +245,34 @@
                 **/
 
                 jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
+                    var n = this.__V.Node;
+                    if (n.expandDom.isExpanded != !isExpanded) {
 
-                    if (this.__V.Node.expandDom.isExpanded != isExpanded)
-                        this._setExpanded(isExpanded);
-                };
-
-
-
-                jUI.Tree.Node.prototype._setExpanded = function(isExpanded) {
+                        if (this.getChildren().length > 0) {
 
 
-                    if (this.getChildren().length > 0) {
+                            if (isExpanded) {
+
+                                // this.__V.Node.expandDom.setChecked(true);
+                                n.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
+                                n.subnodeDom.setVisible(true);
+                                n.isExpanded = isExpanded;
 
 
-                        if (isExpanded) {
+                            } else {
 
-                           // this.__V.Node.expandDom.setChecked(true);
-						   this.__V.Node.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
-						   this.__V.Node.subnodeDom.setVisible(true);
-						   this.__V.Node.isExpanded = isExpanded;
-
-
-                        } else {
-						
-                            //this.__V.Node.expandDom.setChecked(false);
-							this.__V.Node.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
-                            this.__V.Node.subnodeDom.setVisible(false);
-                            this.__V.Node.isExpanded = isExpanded;
+                                //this.__V.Node.expandDom.setChecked(false);
+                                n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
+                                n.subnodeDom.setVisible(false);
+                                n.isExpanded = isExpanded;
 
 
+                            }
                         }
                     }
-
                 };
+
+
 
 
                 /**
@@ -334,8 +281,7 @@
 				**/
 
                 jUI.Tree.Node.prototype.setSelected = function(selected) {
-
-                    if (this.__V.Node.selectDom.getChecked() != selected)
+                    if (this.__V.Node.selectDom.getChecked() != !selected)
                         this._setSelected(selected)
 
 
@@ -344,11 +290,13 @@
 
                 jUI.Tree.Node.prototype._setSelected = function(selected, node = this) {
 
+                    var en = this.__V.Node;
+
                     var t = node.getChildren();
 
                     if (selected) {
                         if (t.length == 0) {
-                            this.__V.Node.selectDom.setChecked(true);
+                            en.selectDom.setChecked(true);
                             return;
                         }
                         for (var i = 0; i < t.length; i++) {
@@ -361,7 +309,7 @@
 
                     } else {
                         if (t.length == 0) {
-                            this.__V.Node.selectDom.setChecked(false);
+                            en.selectDom.setChecked(false);
                             return;
                         }
 
@@ -383,12 +331,13 @@
 				
                 **/
                 jUI.Tree.Node.prototype._setTree = function(tree) {
+                    var n = this.__V.Node;
 
                     if (tree instanceof jUI.Tree) {
 
-                        this.__V.Node.treeObj = tree;
-                        for (var j = 0; j < this.__V.Node.children.length; j++) {
-                            this.__V.Node.children[j]._setTree(tree);
+                        n.treeObj = tree;
+                        for (var j = 0; j < n.children.length; j++) {
+                            n.children[j]._setTree(tree);
                         }
                     }
 
@@ -398,7 +347,7 @@
 
 
                 jUI.Tree.Node.prototype.addChild = function(node) {
-
+                    var n = this.__V.Node;
                     var childSet = [];
 
                     if (arguments.length > 1) {
@@ -427,34 +376,34 @@
 
 
                     if (typeof this.__V.Node.subnodeDom !== "undefined") {
-                        this.__V.Node.subnodeDom.addChildren(childSet);
-                        this.__V.Node.children = this.__V.Node.children.concat(childSet);
+                        n.subnodeDom.addChildren(childSet);
+                        n.children = n.children.concat(childSet);
                         return;
                     }
 
 
-                    this.__V.Node.children = childSet;
+                    n.children = childSet;
 
                     var container = new jUI.Layout({
                         visible: true,
-                        layout: jUI.Layout.ltFollowVer,  
+                        layout: jUI.Layout.ltFollowVer,
                         parent: this,
-						noWrap: true
+                        noWrap: true
                     });
-					
+
                     var subnode = new jUI.Layout({
                         visible: true,
-                        layout: jUI.Layout.ltFollowHor, // fix & add shape , sprate divs , nowrap, scroll, 
+                        layout: jUI.Layout.ltFollowHor,
                         parent: container,
                     }, document.createElement("ul"));
 
                     var oj = this;
 
-                    this.__V.Node.expandDom.setVisible(true);
+                    n.expandDom.setVisible(true);
 
-                    this.__V.Node.expandDom.addEvents({
+                    n.expandDom.addEvents({
                         click: function() {
-                            oj._setExpanded(!oj.__V.Node.isExpanded);
+                            oj.setExpanded(!oj.__V.Node.isExpanded);
                             if (oj.__V.Node.treeObj != null)
                                 oj.__V.Node.treeObj._doEvent("onViewStateChange", oj);
                         }
@@ -462,7 +411,7 @@
 
                     subnode.addChildren(childSet);
 
-                    this.__V.Node.subnodeDom = subnode;
+                    n.subnodeDom = subnode;
 
 
 
@@ -479,12 +428,12 @@
 				
                 **/
                 jUI.Tree.Node.prototype.setSelectable = function(isSelectable) {
-
-                    if (isSelectable == true && this.__V.Node.isSelectable == false) {
-                        this.__V.Node.isSelectable = true;
+                    var n = this.__V.Node;
+                    if (isSelectable == true && n.isSelectable == false) {
+                        n.isSelectable = true;
                         var oj = this;
 
-                        this.__V.Node.selectDom.addEvents({
+                        n.selectDom.addEvents({
                             check: function(state) {
                                 oj._setSelected(state);
                                 if (oj.__V.Node.treeObj != null)
@@ -495,9 +444,9 @@
                         this.__V.Node.selectDom.setVisible(true);
 
 
-                    } else if (isSelectable == false && this.__V.Node.isSelectable == true) {
-                        this.__V.Node.selectDom.setVisible(false);
-                        this.__V.Node.isSelectable = false;
+                    } else if (isSelectable == false && n.isSelectable == true) {
+                        n.selectDom.setVisible(false);
+                        n.isSelectable = false;
 
                     }
 
@@ -508,7 +457,7 @@
                 app.$(jUI.Tree.Node.prototype.__props = app.clone(jUI.Tree.Node.prototype.__props), {
                     text: "setText",
                     children: "addChild",
-                    expanded: "_setExpanded",
+                    expanded: "setExpanded",
                     selectable: "setSelectable",
                 });
 
@@ -549,12 +498,13 @@
                 return new jUI.Window({
                     width: "100%",
                     height: "100%",
-					_style:{
-					overflow: "auto"
-					},
+
                     children: [
 
                         new jUI.Tree({
+                            _style: {
+                                overflow: "auto"
+                            },
                             leafs: [
                                 new jUI.Tree.Node({
                                     selectable: true,
