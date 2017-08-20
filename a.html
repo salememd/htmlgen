@@ -18,7 +18,7 @@
 		
 
         };
-		app.dir = "rtl";
+		app.dir = "ltr";
         app.main = function() {
             new webapp.Login();
         };
@@ -31,7 +31,7 @@
     <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
-        // one function expand/select, css input, limit code 
+        // app.rtl
         (function() {
 
 
@@ -264,7 +264,11 @@
                             } else {
 
                                 //this.__V.Node.expandDom.setChecked(false);
+								if(app.rtl){
+								 n.expandDom.setPath(app.resources.icons.paths.treeCollapsRTL.path);
+								}else{
                                 n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
+								}
                                 n.subnodeDom.setVisible(false);
                                 n.isExpanded = isExpanded;
 
