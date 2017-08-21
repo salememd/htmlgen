@@ -24,128 +24,17 @@
         return {
             options: new jUI.Dataset({
                 data: {
-                    fields: ["treeNodes"],
+                    fields: ["text", "selected", "expand", "parent"],
                     rows: [
-                        [
-						new jUI.Tree.Node({
-                            selectable: true,
-                            text: "a-f",
-                            expanded: true,
-                            children: [
-                                new jUI.Tree.Node({
-                                    text: "a",
-                                    selectable: true,
-                                    children: []
-                                }),
-                                new jUI.Tree.Node({
-                                    text: "b",
-                                    selectable: true,
-                                    children: []
-                                }),
-                                new jUI.Tree.Node({
-                                    text: "c-f",
-                                    selectable: true,
-                                    children: [
-                                        new jUI.Tree.Node({
-                                            text: "c",
-                                            selectable: true,
-                                            children: []
-                                        }), new jUI.Tree.Node({
-                                            text: "d - f",
-                                            selectable: true,
-                                            children: [
-                                                new jUI.Tree.Node({
-                                                    text: "d",
-                                                    selectable: true,
-                                                    children: []
-                                                }),
-                                                new jUI.Tree.Node({
-                                                    text: "e",
-                                                    selectable: true,
-                                                    children: []
-                                                }),
-                                                new jUI.Tree.Node({
-                                                    text: "f",
-                                                    selectable: true,
-                                                    children: []
-                                                }),
-                                            ],
-                                            expanded: false
-                                        }),
-                                    ],
-                                    expanded: true,
-                                })
-                            ],
-                            expanded: true,
-                        })
-						],
-                        [
-                            new jUI.Tree.Node({
-                                text: "g",
-                                selectable: true,
-                                expanded: true,
-                                children: []
-                            })
-                        ],
-                        [
-                            new jUI.Tree.Node({
-                                text: "h",
-                                selectable: true,
-                                expanded: true,
-                                children: []
-                            })
-                        ],
-                        [
-                            new jUI.Tree.Node({
-                                text: "i - n",
-                                selectable: true,
-                                children: [
-                                    new jUI.Tree.Node({
-                                        text: "i",
-                                        selectable: true,
-                                        expanded: true,
-                                        children: []
-                                    }),
-                                    new jUI.Tree.Node({
-                                        text: "j",
-                                        selectable: true,
-                                        expanded: true,
-                                        children: []
-                                    }),
-                                    new jUI.Tree.Node({
-                                        text: "k - m",
-                                        selectable: true,
-                                        children: [
-                                            new jUI.Tree.Node({
-                                                text: "k",
-                                                selectable: true,
-                                                expanded: true,
-                                                children: []
-                                            }), new jUI.Tree.Node({
-                                                text: "l",
-                                                selectable: true,
-                                                expanded: true,
-                                                children: []
-                                            }), new jUI.Tree.Node({
-                                                text: "m",
-                                                selectable: true,
-                                                expanded: true,
-                                                children: []
-                                            })
-                                        ],
-                                        expanded: true,
-                                    }),
-                                    new jUI.Tree.Node({
-                                        text: "n",
-                                        selectable: true,
-                                        children: []
-                                    })
-                                ],
-                                expanded: true,
-                            })
-                        ]
-
-
+                        
+						
+						["a", true, true, -1],
+						["b", true, false, 0],
+						["c", true, false, 0],
+						["d", true, false, 2],
+                        ["e", true, false, 3],
+                        ["f", true, false, 0],
+						["g", true, false, -1],
                     ]
                 }
             })

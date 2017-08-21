@@ -15,10 +15,10 @@
         /* global app, webapp */
 
         var webapp = {
-		
+
 
         };
-		app.dir = "ltr";
+        app.dir = "ltr";
         app.main = function() {
             new webapp.Administration();
         };
@@ -31,7 +31,6 @@
     <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
-        
         (function() {
 
 
@@ -88,16 +87,90 @@
 
                 };
 
-				jUI.Tree.prototype._doDatasetRefresh = function(dataset){
-				var ds = this.getDataset();
-				var a=[];
-				for(var i=0;i<ds.getNumOfRows();i++){
-				a.push(ds.getFieldValueAt("treeNodes",i));
-				}
-				this.leafs(a);
+                jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
+                    var ds = this.getDataset();
+                    var a = [];
+                    var j = 0;
+                    var path = [];
+                    for (var i = 0; i < ds.getNumOfRows(); i++) {
+
+                        path = [];
+                        if (ds.getFieldValueAt("parent", i) != -1) {
+
+
+                            j = ds.getFieldValueAt("parent", i);
+                            var cc = 0;
+                            var n;
+                            (foo = function(set) {
+							
+                                for (var dd = 0; dd < set.length; dd++) {
 				
-				
-        };
+                                    if (cc == j) {
+                                        n = set[dd];
+										break;
+									}
+									cc++;
+                                    if (set[dd].getChildren().length != 0) {
+									  
+                                        foo(set[dd].getChildren());
+                                    } 
+
+                                }
+
+                            })(a);
+
+                            n.addChild(new jUI.Tree.Node({
+                                selectable: ds.getFieldValueAt("selected", i),
+                                text: ds.getFieldValueAt("text", i),
+                                expanded: ds.getFieldValueAt("expand", i),
+                                children: []
+                            })); 
+
+
+
+                            //path.push(j);
+                            /*while (ds.getFieldValueAt("parent", j) != -1){
+                                j = ds.getFieldValueAt("parent", j);
+                                path.push(j);
+                            	alert(path)
+                            }*/
+
+                            /*	
+						var n = a[path.pop()];
+						while(path.length != 0){
+						var scc = path.pop() ;
+						alert("scc  "+ scc);
+						n = n.getChildren()[scc];
+						  
+						}
+						n.addChild(new jUI.Tree.Node({
+                                selectable: ds.getFieldValueAt("selected", i),
+                                text: ds.getFieldValueAt("text", i),
+                                expanded: ds.getFieldValueAt("expand", i),
+                                children: []
+                        }));
+					*/
+                            /* a[j].addChild(new jUI.Tree.Node({
+                                selectable: ds.getFieldValueAt("selected", i),
+                                text: ds.getFieldValueAt("text", i),
+                                expanded: ds.getFieldValueAt("expand", i),
+                                children: []
+                        }));
+					*/
+
+                        } else {
+                            a.push(new jUI.Tree.Node({
+                                selectable: ds.getFieldValueAt("selected", i),
+                                text: ds.getFieldValueAt("text", i),
+                                children: [],
+								expanded: ds.getFieldValueAt("expand", i)
+                            }));
+
+                        }
+
+                    }
+                    this.leafs(a);
+                };
 
 
                 jUI.Tree.prototype.getTreeLeafs = function() {
@@ -169,7 +242,7 @@
                         parent: this,
                         noWrap: true
                     });
-					
+
                     this.__V.Node = {
 
                         isExpanded: false,
@@ -258,8 +331,7 @@
 
                 jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
                     var n = this.__V.Node;
-                    if (n.expandDom.isExpanded != !isExpanded) {
-
+					n.isExpanded = isExpanded;
                         if (this.getChildren().length > 0) {
 
 
@@ -269,22 +341,22 @@
                                 n.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
                                 n.subnodeDom.setVisible(true);
                                 n.isExpanded = isExpanded;
-
+								
 
                             } else {
 
                                 //this.__V.Node.expandDom.setChecked(false);
-								if(app.rtl){
-								 n.expandDom.setPath(app.resources.icons.paths.treeCollapsRTL.path);
-								}else{
-                                n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
-								}
+                                if (app.rtl) {
+                                    n.expandDom.setPath(app.resources.icons.paths.treeCollapsRTL.path);
+                                } else {
+                                    n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
+                                }
                                 n.subnodeDom.setVisible(false);
                                 n.isExpanded = isExpanded;
 
 
                             }
-                        }
+                        
                     }
                 };
 
@@ -428,11 +500,9 @@
                     subnode.addChildren(childSet);
 
                     n.subnodeDom = subnode;
-
-
-
-                    //this._setExpanded(this.__V.Node.isExpanded);
-
+				
+					this.setExpanded(n.isExpanded);
+					
 
 
 
@@ -484,12 +554,9 @@
 
             })();
         })();
-
-
-
     </script>
 
-  <script src="js/webapp/views/test.js?v=1.1" type="text/javascript"></script>
+    <script src="js/webapp/views/test.js?v=1.1" type="text/javascript"></script>
 </head>
 
 <body onload="void(0);">
