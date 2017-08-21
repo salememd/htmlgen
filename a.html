@@ -20,7 +20,7 @@
         };
 		app.dir = "ltr";
         app.main = function() {
-            new webapp.Login();
+            new webapp.Administration();
         };
     </script>
 
@@ -31,7 +31,7 @@
     <script src="js/jui/jui-data.js?v=1.1" type="text/javascript"></script>
 
     <script>
-        // app.rtl
+        
         (function() {
 
 
@@ -43,11 +43,11 @@
                 }, false);
                 var el = document.createElement("ul");
 
-                jUI.Layout.call(this, newPa, el);
+                jUI.DBComponent.call(this, newPa, el);
             };
 
             (function() {
-                jUI.Tree.prototype = new jUI.Layout({
+                jUI.Tree.prototype = new jUI.DBComponent({
                     __loading__: true
                 });
                 jUI.Tree.prototype.constructor = jUI.Tree;
@@ -56,7 +56,7 @@
                 // Overriden Function Start ===========================================
 
                 jUI.Tree.prototype._initProp = function(pa) {
-                    jUI.Layout.prototype._initProp.call(this, pa);
+                    jUI.DBComponent.prototype._initProp.call(this, pa);
                     this.__V.Tree = {
                         rootNode: new jUI.Tree.Node({
                             text: "",
@@ -88,6 +88,16 @@
 
                 };
 
+				jUI.Tree.prototype._doDatasetRefresh = function(dataset){
+				var ds = this.getDataset();
+				var a=[];
+				for(var i=0;i<ds.getNumOfRows();i++){
+				a.push(ds.getFieldValueAt("treeNodes",i));
+				}
+				this.leafs(a);
+				
+				
+        };
 
 
                 jUI.Tree.prototype.getTreeLeafs = function() {
@@ -477,177 +487,9 @@
 
 
 
-
-        /* global app, webapp, jUI */
-
-
-        (function() {
-            webapp.Login = function() {
-                jUI.ViewController.call(this);
-            };
-            webapp.Login.prototype = new jUI.ViewController({
-                __loading__: true
-            });
-            webapp.Login.prototype.constructor = webapp.Login;
-            webapp.Login.prototype._initController = function() {
-                this.viewDidLoad = function() {
-                    this.view.show();
-
-                };
-
-            };
-
-
-
-            webapp.Login.prototype._initView = function() {
-
-                return new jUI.Window({
-                    width: "100%",
-                    height: "100%",
-
-                    children: [
-
-                        new jUI.Tree({
-                            _style: {
-                                overflow: "auto"
-                            },
-							width: 500,
-							height: 500,
-                            leafs: [
-                                new jUI.Tree.Node({
-                                    selectable: true,
-                                    text: "a-f",
-                                    children: [
-                                        new jUI.Tree.Node({
-                                            text: "a",
-                                            selectable: true,
-                                            children: []
-                                        }),
-                                        new jUI.Tree.Node({
-                                            text: "b",
-                                            selectable: true,
-                                            children: []
-                                        }),
-                                        new jUI.Tree.Node({
-                                            text: "c-f",
-                                            selectable: true,
-                                            children: [
-                                                new jUI.Tree.Node({
-                                                    text: "c",
-                                                    selectable: true,
-                                                    children: []
-                                                }), new jUI.Tree.Node({
-                                                    text: "d - f",
-                                                    selectable: true,
-                                                    children: [
-                                                        new jUI.Tree.Node({
-                                                            text: "d",
-                                                            selectable: true,
-                                                            children: []
-                                                        }),
-                                                        new jUI.Tree.Node({
-                                                            text: "e",
-                                                            selectable: true,
-                                                            children: []
-                                                        }),
-                                                        new jUI.Tree.Node({
-                                                            text: "f",
-                                                            selectable: true,
-                                                            children: []
-                                                        }),
-                                                    ],
-                                                    expanded: false
-                                                }),
-                                            ],
-                                            expanded: true,
-
-                                        })
-                                    ],
-                                    expanded: true,
-
-                                }),
-                                new jUI.Tree.Node({
-                                    text: "g",
-                                    selectable: true,
-                                    expanded: true,
-                                    children: []
-                                }),
-                                new jUI.Tree.Node({
-                                    text: "h",
-                                    selectable: true,
-                                    expanded: true,
-                                    children: []
-                                }),
-                                new jUI.Tree.Node({
-                                    text: "i - n",
-                                    selectable: true,
-                                    children: [
-                                        new jUI.Tree.Node({
-                                            text: "i",
-                                            selectable: true,
-                                            expanded: true,
-                                            children: []
-                                        }),
-                                        new jUI.Tree.Node({
-                                            text: "j",
-                                            selectable: true,
-                                            expanded: true,
-                                            children: []
-                                        }),
-                                        new jUI.Tree.Node({
-                                            text: "k - m",
-                                            selectable: true,
-                                            children: [
-                                                new jUI.Tree.Node({
-                                                    text: "k",
-                                                    selectable: true,
-                                                    expanded: true,
-                                                    children: []
-                                                }), new jUI.Tree.Node({
-                                                    text: "l",
-                                                    selectable: true,
-                                                    expanded: true,
-                                                    children: []
-                                                }), new jUI.Tree.Node({
-                                                    text: "m",
-                                                    selectable: true,
-                                                    expanded: true,
-                                                    children: []
-                                                })
-                                            ],
-                                            expanded: true,
-
-                                        }),
-                                        new jUI.Tree.Node({
-                                            text: "n",
-                                            selectable: true,
-                                            children: []
-                                        })
-
-                                    ],
-                                    expanded: true,
-
-                                })
-
-
-                            ],
-                            events: {
-                                onNodeSelectionChange: function(a) {
-                                    alert("User onSelect event: " + a.getText());
-                                },
-                                onViewStateChange: function(a) {
-                                    alert("User onCollaps/expand event: " + a.getText());
-                                }
-                            }
-                        })
-
-                    ]
-                });
-            };
-        })();
     </script>
 
-
+  <script src="js/webapp/views/test.js?v=1.1" type="text/javascript"></script>
 </head>
 
 <body onload="void(0);">
