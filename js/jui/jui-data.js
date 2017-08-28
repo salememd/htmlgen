@@ -2520,7 +2520,8 @@
             if(V.group === v) return;
             V.group && grps[V.group] === this && (grps[V.group] = null);
             V.group = v;
-            if(v && this.getChecked()){
+            
+			if(v && this.getChecked()){
                 grps[v] && grps[v].setChecked(false);
                 grps[v] = this;
             }

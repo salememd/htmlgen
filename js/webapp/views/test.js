@@ -24,18 +24,21 @@
         return {
             options: new jUI.Dataset({
                 data: {
-                    fields: ["text", "selected", "expand", "parent"],
+                    fields: ["id", "subject"],
                     rows: [
-                        
-						
-						["a", true, true, -1],
-						["b", true, false, 0],
-						["c", true, false, 0],
-						["d", true, false, 2],
-                        ["e", true, false, 3],
-                        ["f", true, false, 0],
-						["g", true, false, -1],
-                    ]
+					
+						["132112", "java"],
+						["132112", "java"],
+					    ["132112", "VB"],
+						["132112", "c"],
+						["231112", "java"],
+						["231112", "c"],
+						["331112", "c#"],
+						["132112", "c++"],
+
+					
+
+					]
                 }
             })
         };

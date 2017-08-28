@@ -2603,7 +2603,7 @@ var jUI = {};
             this.__V.DBComponent.dataField = v;
             this._doDatasetRefresh();
         };
-        jUI.DBComponent.prototype.setRequired= function(v){
+        jUI.DBComponent.prototype.setRequired = function(v){
             this.__V.DBComponent.required = v;
         };
         jUI.DBComponent.prototype.setErrorText = function(v){

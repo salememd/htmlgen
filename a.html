@@ -71,104 +71,93 @@
                 };
 
                 jUI.Tree.prototype.leafs = function(nodes) {
-
-
-                    this.__V.Tree.rootNode.addChild(nodes);
-                    this.__V.Tree.rootNode.setExpanded(true);
-                    this.__V.Tree.rootNode.__V.Node.expandDom.setVisible(false);
-
-                    this.addChildren([this.__V.Tree.rootNode]);
-
+                    var r = this.__V.Tree.rootNode;
+                    r.addChild(nodes);
+                    r.setExpanded(true);
+                    r.__V.Node.expandDom.setVisible(false);
+                    this.addChildren([r]);
                     for (var i = 0; i < nodes.length; i++) {
                         nodes[i]._setTree(this);
                     }
-
-
-
                 };
 
                 jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
                     var ds = this.getDataset();
+                    var fd = [];
                     var a = [];
-                    var j = 0;
-                    var path = [];
-                    for (var i = 0; i < ds.getNumOfRows(); i++) {
+                    var k;
 
-                        path = [];
-                        if (ds.getFieldValueAt("parent", i) != -1) {
+                    for (var f in ds.getFields()) {
+                        fd.push(f);
+                    }
 
+                    for (var i = 0; i < ds.getRecords().length; i++) {
+                        k = 0;
 
-                            j = ds.getFieldValueAt("parent", i);
-                            var cc = 0;
-                            var n;
-                            (foo = function(set) {
-							
-                                for (var dd = 0; dd < set.length; dd++) {
-				
-                                    if (cc == j) {
-                                        n = set[dd];
-										break;
-									}
-									cc++;
-                                    if (set[dd].getChildren().length != 0) {
-									  
-                                        foo(set[dd].getChildren());
-                                    } 
+                        (foo = function(set, p) {
+                            if (k > fd.length - 1) {
+                                return;
+                            }
+                            var flag = 0;
+                            for (var j = 0; j < set.length; j++) {
 
+                                if (set[j].getText() == ds.getFieldValueAt(fd[k], i)) {
+                                    if (set[j].getChildren().length > 0) {
+                                        k++;
+                                        foo(set[j].getChildren(), set[j]);
+                                        flag = 1;
+                                    } else {
+                                        k++;
+                                        flag = 1;
+                                    }
                                 }
 
-                            })(a);
+                            }
 
-                            n.addChild(new jUI.Tree.Node({
-                                selectable: ds.getFieldValueAt("selected", i),
-                                text: ds.getFieldValueAt("text", i),
-                                expanded: ds.getFieldValueAt("expand", i),
-                                children: []
-                            })); 
+                            if (flag == 0) {
+                                if (p == null) {
 
+                                    var n = new jUI.Tree.Node({
+                                        selectable: true,
+                                        text: ds.getFieldValueAt(fd[k], i),
+                                        children: [],
+                                        expanded: true
+                                    });
+                                    k++;
+                                    a.push(n);
+                                    foo(n.getChildren(), n);
 
+                                } else {
+                                    var n = new jUI.Tree.Node({
+                                        selectable: true,
+                                        text: ds.getFieldValueAt(fd[k], i),
+                                        children: [],
+                                        expanded: true
+                                    });
 
-                            //path.push(j);
-                            /*while (ds.getFieldValueAt("parent", j) != -1){
-                                j = ds.getFieldValueAt("parent", j);
-                                path.push(j);
-                            	alert(path)
-                            }*/
+                                    p.addChild(n)
+                                    k++;
+                                    foo(n.getChildren(), n);
 
-                            /*	
-						var n = a[path.pop()];
-						while(path.length != 0){
-						var scc = path.pop() ;
-						alert("scc  "+ scc);
-						n = n.getChildren()[scc];
-						  
-						}
-						n.addChild(new jUI.Tree.Node({
-                                selectable: ds.getFieldValueAt("selected", i),
-                                text: ds.getFieldValueAt("text", i),
-                                expanded: ds.getFieldValueAt("expand", i),
-                                children: []
-                        }));
-					*/
-                            /* a[j].addChild(new jUI.Tree.Node({
-                                selectable: ds.getFieldValueAt("selected", i),
-                                text: ds.getFieldValueAt("text", i),
-                                expanded: ds.getFieldValueAt("expand", i),
-                                children: []
-                        }));
-					*/
-
-                        } else {
-                            a.push(new jUI.Tree.Node({
-                                selectable: ds.getFieldValueAt("selected", i),
-                                text: ds.getFieldValueAt("text", i),
-                                children: [],
-								expanded: ds.getFieldValueAt("expand", i)
-                            }));
-
-                        }
+                                }
+                            }
+                        })(a, null);
 
                     }
+
+                    // group, this can be removed subnodes will appear
+                    a.forEach(function(e) {
+                        var n = new jUI.Tree.Node({
+                            selectable: true,
+                            text: e.getChildren().length,
+                            children: [],
+                            expanded: true
+                        });
+                        e.removeChildren();
+                        e.addChild(n);
+                    });
+
+
                     this.leafs(a);
                 };
 
@@ -253,6 +242,8 @@
 
                         treeObj: null,
 
+                        parentNode: null,
+
                         expandDom: new jUI.Shape({
                             path: "",
                             visible: true,
@@ -283,8 +274,6 @@
 
 
                     };
-
-
                     this.setVisible(true);
                     this.setLayout(jUI.Layout.ltFollowVer);
 
@@ -308,7 +297,13 @@
 
                 }
 
+                jUI.Tree.Node.prototype.removeChildren = function() {
+                    this.__V.Node.children.forEach(function(element) {
+                        element.finalize();
+                    });
+                    this.__V.Node.children = [];
 
+                }
 
 
                 jUI.Tree.Node.prototype._getSelectedChildren = function(node = this.getChildren(), set = []) {
@@ -331,36 +326,27 @@
 
                 jUI.Tree.Node.prototype.setExpanded = function(isExpanded) {
                     var n = this.__V.Node;
-					n.isExpanded = isExpanded;
-                        if (this.getChildren().length > 0) {
+                    n.isExpanded = isExpanded;
+                    if (this.getChildren().length > 0) {
+                        if (isExpanded) {
+                            n.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
+                            n.subnodeDom.setVisible(true);
+                            n.isExpanded = isExpanded;
 
 
-                            if (isExpanded) {
-
-                                // this.__V.Node.expandDom.setChecked(true);
-                                n.expandDom.setPath(app.resources.icons.paths.treeExpand.path);
-                                n.subnodeDom.setVisible(true);
-                                n.isExpanded = isExpanded;
-								
-
+                        } else {
+                            if (app.rtl) {
+                                n.expandDom.setPath(app.resources.icons.paths.treeCollapsRTL.path);
                             } else {
-
-                                //this.__V.Node.expandDom.setChecked(false);
-                                if (app.rtl) {
-                                    n.expandDom.setPath(app.resources.icons.paths.treeCollapsRTL.path);
-                                } else {
-                                    n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
-                                }
-                                n.subnodeDom.setVisible(false);
-                                n.isExpanded = isExpanded;
-
-
+                                n.expandDom.setPath(app.resources.icons.paths.treeCollaps.path);
                             }
-                        
+                            n.subnodeDom.setVisible(false);
+                            n.isExpanded = isExpanded;
+
+                        }
+
                     }
                 };
-
-
 
 
                 /**
@@ -372,57 +358,57 @@
                     if (this.__V.Node.selectDom.getChecked() != !selected)
                         this._setSelected(selected)
 
-
                 };
 
 
                 jUI.Tree.Node.prototype._setSelected = function(selected, node = this) {
 
-                    var en = this.__V.Node;
-
+                    var en = node.__V.Node;
                     var t = node.getChildren();
 
                     if (selected) {
-                        if (t.length == 0) {
-                            en.selectDom.setChecked(true);
-                            return;
-                        }
+                        en.selectDom.setChecked(true);
                         for (var i = 0; i < t.length; i++) {
                             if (t[i].__V.Node.selectDom.getChecked() == false) {
                                 this._setSelected(true, t[i]);
-                                t[i].__V.Node.selectDom.setChecked(true);
                             }
                         }
 
 
                     } else {
-                        if (t.length == 0) {
-                            en.selectDom.setChecked(false);
-                            return;
-                        }
-
+                        en.selectDom.setChecked(false);
                         for (var i = 0; i < t.length; i++) {
                             if (t[i].__V.Node.selectDom.getChecked()) {
                                 this._setSelected(false, t[i]);
-                                t[i].__V.Node.selectDom.setChecked(false);
-
                             }
-
                         }
                     }
 
+                    var f = 0;
+                    if (en.parentNode == null) {
+                        return;
+                    }
+                    en.parentNode.getChildren().forEach(function(n) {
+                        if (n.__V.Node.selectDom.getChecked() != selected) {
+                            f = 1;
+                            return;
+                        }
+
+                    });
+                    if (f == 0) {
+                        en.parentNode._setSelected(selected);
+                    }
                 };
 
 
                 /**
-                TreeView uses this method to attach it's own object with the node
+                TreeView uses this method to reference its own object with the node to run events
 				
                 **/
                 jUI.Tree.Node.prototype._setTree = function(tree) {
                     var n = this.__V.Node;
 
                     if (tree instanceof jUI.Tree) {
-
                         n.treeObj = tree;
                         for (var j = 0; j < n.children.length; j++) {
                             n.children[j]._setTree(tree);
@@ -460,6 +446,7 @@
                         if (childSet[i] instanceof jUI.Tree.Node == false) {
                             throw new Error("Uncomaptable");
                         }
+                        childSet[i].__V.Node.parentNode = this;
                     }
 
 
@@ -468,7 +455,6 @@
                         n.children = n.children.concat(childSet);
                         return;
                     }
-
 
                     n.children = childSet;
 
@@ -500,11 +486,8 @@
                     subnode.addChildren(childSet);
 
                     n.subnodeDom = subnode;
-				
-					this.setExpanded(n.isExpanded);
-					
 
-
+                    this.setExpanded(n.isExpanded);
 
                 }
 
@@ -526,10 +509,7 @@
                                     oj.__V.Node.treeObj._doEvent("onNodeSelectionChange", oj);
                             }
                         });
-
                         this.__V.Node.selectDom.setVisible(true);
-
-
                     } else if (isSelectable == false && n.isSelectable == true) {
                         n.selectDom.setVisible(false);
                         n.isSelectable = false;
