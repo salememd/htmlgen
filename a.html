@@ -63,7 +63,8 @@
                             children: [],
                             expanded: false,
 
-                        })
+                        }),
+						DSfieldsOrder: []
                     }
 
                     this.setNoWrap(true);
@@ -81,30 +82,40 @@
                     }
                 };
 
+				jUI.Tree.prototype._setDsFieldsOrder = function(fields) {
+                    this.__V.Tree.DSfieldsOrder = fields;
+                };
+
+				
                 jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
                     var ds = this.getDataset();
-                    var fd = [];
-                    var a = [];
+					var v =  this.__V.Tree;
+                    var fields = [];
+                    var treeSet = [];
                     var k;
-
-                    for (var f in ds.getFields()) {
-                        fd.push(f);
+					
+					for (var f in ds.getFields()) {
+                        fields.push(f);
                     }
+					
+					if(v.DSfieldsOrder.length != 0 && v.DSfieldsOrder.length <= fields.length){
+					fields = v.DSfieldsOrder;
 
-                    for (var i = 0; i < ds.getRecords().length; i++) {
-                        k = 0;
+					}
+					
+                    
 
-                        (foo = function(set, p) {
-                            if (k > fd.length - 1) {
+					var sort = function(set, parent) {
+                            if (k > fields.length - 1) {
                                 return;
                             }
                             var flag = 0;
                             for (var j = 0; j < set.length; j++) {
 
-                                if (set[j].getText() == ds.getFieldValueAt(fd[k], i)) {
+                                if (set[j].getText() == ds.f(fields[k])) {
                                     if (set[j].getChildren().length > 0) {
                                         k++;
-                                        foo(set[j].getChildren(), set[j]);
+                                        sort(set[j].getChildren(), set[j]);
                                         flag = 1;
                                     } else {
                                         k++;
@@ -115,50 +126,43 @@
                             }
 
                             if (flag == 0) {
-                                if (p == null) {
+                                if (parent == null) {
 
                                     var n = new jUI.Tree.Node({
                                         selectable: true,
-                                        text: ds.getFieldValueAt(fd[k], i),
+                                        text: ds.f(fields[k]),
                                         children: [],
                                         expanded: true
                                     });
                                     k++;
-                                    a.push(n);
-                                    foo(n.getChildren(), n);
+                                    treeSet.push(n);
+                                    sort(n.getChildren(), n);
 
                                 } else {
                                     var n = new jUI.Tree.Node({
                                         selectable: true,
-                                        text: ds.getFieldValueAt(fd[k], i),
+                                        text: ds.f(fields[k]),
                                         children: [],
                                         expanded: true
                                     });
 
-                                    p.addChild(n)
+                                    parent.addChild(n)
                                     k++;
-                                    foo(n.getChildren(), n);
+                                    sort(n.getChildren(), n);
 
                                 }
                             }
-                        })(a, null);
+                        }
+					
+                    while (ds.getPos() < ds.getRecords().length) {
+                        k = 0;					
+                        sort(treeSet, null);
+						ds.next();
+					}
 
-                    }
-
-                    // group, this can be removed subnodes will appear
-                    a.forEach(function(e) {
-                        var n = new jUI.Tree.Node({
-                            selectable: true,
-                            text: e.getChildren().length,
-                            children: [],
-                            expanded: true
-                        });
-                        e.removeChildren();
-                        e.addChild(n);
-                    });
-
-
-                    this.leafs(a);
+                  
+				   
+				   this.leafs(treeSet);
                 };
 
 
@@ -175,7 +179,8 @@
 
 
                 app.$(jUI.Tree.prototype.__props = app.clone(jUI.Tree.prototype.__props), {
-                    leafs: "leafs"
+                    leafs: "leafs",
+					fieldsOrder: "_setDsFieldsOrder"
 
                 });
 

@@ -24,17 +24,17 @@
         return {
             options: new jUI.Dataset({
                 data: {
-                    fields: ["id", "subject"],
+                    fields: ["id", "subject", "hours"],
                     rows: [
 					
-						["132112", "java"],
-						["132112", "java"],
-					    ["132112", "VB"],
-						["132112", "c"],
-						["231112", "java"],
-						["231112", "c"],
-						["331112", "c#"],
-						["132112", "c++"],
+						["132112", "java", 3],
+						["132112", "java", 3],
+					    ["132112", "VB", 2],
+						["132112", "c", 1],
+						["231112", "java",2],
+						["231112", "c",3],
+						["331112", "c#",6],
+						["132112", "c++",5],
 
 					
 
@@ -56,8 +56,8 @@
                 layout: jUI.Layout.ltFollowHor,
                 width: 500,
                 height: 500,
+				fieldsOrder: ["hours","subject", "id"],
                 dataset: so.models.options,
-
                 events: {
                     onNodeSelectionChange: function(a) {
                         alert("User onSelect event: " + a.getText());
