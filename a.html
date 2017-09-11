@@ -13,6 +13,7 @@
 
     <script type="text/javascript">
         /* global app, webapp */
+        // pointer posetion change, select text, expand when select subnode
 
         var webapp = {
 
@@ -56,6 +57,7 @@
 
                 jUI.Tree.prototype._initProp = function(pa) {
                     jUI.DBComponent.prototype._initProp.call(this, pa);
+
                     this.__V.Tree = {
                         rootNode: new jUI.Tree.Node({
                             text: "",
@@ -64,7 +66,9 @@
                             expanded: false,
 
                         }),
-						DSfieldsOrder: []
+                        DSfieldsOrder: [],
+                        selectedNode: null,
+
                     }
 
                     this.setNoWrap(true);
@@ -82,87 +86,89 @@
                     }
                 };
 
-				jUI.Tree.prototype._setDsFieldsOrder = function(fields) {
+                jUI.Tree.prototype._setDsFieldsOrder = function(fields) {
                     this.__V.Tree.DSfieldsOrder = fields;
-                };
 
-				
+                };
+                jUI.Tree.prototype._doDataChanged = function() {
+                    alert("posetion changed to row : " + this.getDataset().getPos());
+                    this._updateSelectedNode();
+                }
+
                 jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
                     var ds = this.getDataset();
-					var v =  this.__V.Tree;
+                    var v = this.__V.Tree;
                     var fields = [];
                     var treeSet = [];
                     var k;
-					
-					for (var f in ds.getFields()) {
+
+                    for (var f in ds.getFields()) {
                         fields.push(f);
                     }
-					
-					if(v.DSfieldsOrder.length != 0 && v.DSfieldsOrder.length <= fields.length){
-					fields = v.DSfieldsOrder;
 
-					}
-					
-                    
+                    if (v.DSfieldsOrder.length != 0 && v.DSfieldsOrder.length <= fields.length) {
+                        fields = v.DSfieldsOrder;
+                    }
 
-					var sort = function(set, parent) {
-                            if (k > fields.length - 1) {
-                                return;
-                            }
-                            var flag = 0;
-                            for (var j = 0; j < set.length; j++) {
 
-                                if (set[j].getText() == ds.f(fields[k])) {
-                                    if (set[j].getChildren().length > 0) {
-                                        k++;
-                                        sort(set[j].getChildren(), set[j]);
-                                        flag = 1;
-                                    } else {
-                                        k++;
-                                        flag = 1;
-                                    }
-                                }
 
-                            }
+                    var sort = function(set, parent, index) {
+                        if (k > fields.length - 1) {
+                            return;
+                        }
+                        var flag = 0;
+                        for (var j = 0; j < set.length; j++) {
 
-                            if (flag == 0) {
-                                if (parent == null) {
-
-                                    var n = new jUI.Tree.Node({
-                                        selectable: true,
-                                        text: ds.f(fields[k]),
-                                        children: [],
-                                        expanded: true
-                                    });
+                            if (set[j].getText() == ds.fAt(fields[k], index)) {
+                                if (set[j].getChildren().length > 0) {
                                     k++;
-                                    treeSet.push(n);
-                                    sort(n.getChildren(), n);
-
+                                    sort(set[j].getChildren(), set[j], index);
+                                    flag = 1;
                                 } else {
-                                    var n = new jUI.Tree.Node({
-                                        selectable: true,
-                                        text: ds.f(fields[k]),
-                                        children: [],
-                                        expanded: true
-                                    });
-
-                                    parent.addChild(n)
                                     k++;
-                                    sort(n.getChildren(), n);
-
+                                    flag = 1;
                                 }
+                            }
+
+                        }
+
+                        if (flag == 0) {
+                            if (parent == null) {
+
+                                var n = new jUI.Tree.Node({
+                                    selectable: true,
+                                    text: ds.fAt(fields[k], index),
+                                    children: [],
+                                    expanded: true
+                                });
+                                k++;
+                                treeSet.push(n);
+                                sort(n.getChildren(), n, index);
+
+                            } else {
+                                var n = new jUI.Tree.Node({
+                                    selectable: true,
+                                    text: ds.fAt(fields[k], index),
+                                    children: [],
+                                    expanded: true
+                                });
+
+                                parent.addChild(n)
+                                k++;
+                                sort(n.getChildren(), n, index);
+
                             }
                         }
-					
-                    while (ds.getPos() < ds.getRecords().length) {
-                        k = 0;					
-                        sort(treeSet, null);
-						ds.next();
-					}
+                    }
 
-                  
-				   
-				   this.leafs(treeSet);
+                    ds.forEach(function(index) {
+                        k = 0;
+                        sort(treeSet, null, index);
+                    });
+
+
+
+                    this.leafs(treeSet);
                 };
 
 
@@ -170,9 +176,92 @@
                     return this.__V.Tree.rootNode.getChildren();
                 };
 
+                jUI.Tree.prototype._updateSelectedNode = function() {
+                    var ds = this.getDataset();
+                    var pos = ds.getPos();
+                    var fields = this.__V.Tree.DSfieldsOrder;
+				
+					var temp;
+                    var k = 0;
+                    var search = function(set, index) {
+                        if (k > fields.length - 1) {
+                            return;
+                        }
+                        for (var j = 0; j < set.length; j++) {
+
+                            if (set[j].getText() == ds.fAt(fields[k], index)) {
+                                if (set[j].getChildren().length > 0) {
+                                    k++;
+                                    search(set[j].getChildren(), index);
+                                } else {
+                                    k++;
+                                    temp = set[j];
+                                }
+                            }
+
+                        }
+                    }
+                    search(this.getTreeLeafs(), pos);
+
+                    this.selectNode(temp)
 
 
-                jUI.Tree.prototype.getSelectedNodes = function() {
+                };
+
+                jUI.Tree.prototype.selectNode = function(node) {
+
+                    var ds = this.getDataset();
+                    var n = node.__V.Node;
+                    var tmp = this.selectedNode;
+                    if (tmp != node) {
+                        if (tmp != null) {
+                            tmp.__V.Node.text.__V.el.style.background = "none";
+                        }
+                        n.text.__V.el.style.background = "#d0d0d0";
+                        this.selectedNode = node;
+
+                        var path = [];
+
+                        while (node.__V.Node.parentNode != null) {
+                            node.setExpanded(true);
+                            path.push(node);
+                            node = node.__V.Node.parentNode;
+                        }
+
+                        var fields = this.__V.Tree.DSfieldsOrder;
+                        path.reverse();
+                        var temp = [];
+                        for (var i = 0; i < path.length; i++) {
+                            var t = [];
+                            ds.forEach(function(index) {
+                                if (ds.fAt(fields[i], index) == path[i].getText()) {
+                                    if (temp.includes(index)) {
+                                        t.push(index);
+                                    } else {
+                                        temp.push(index)
+                                    }
+                                }
+
+                            });
+
+                            if (t.length != 0) {
+                                temp = t;
+                            }
+
+                        }
+
+                        ds.setPos(temp[0]);
+                    }
+
+                }
+
+                jUI.Tree.prototype.getSelectedNode = function() {
+                    return node.treeObj.selectedNode;
+
+                }
+
+
+                jUI.Tree.prototype.getCheckedNodes = function() {
                     return this.__V.Tree.rootNode._getSelectedChildren();
                 };
 
@@ -180,7 +269,7 @@
 
                 app.$(jUI.Tree.prototype.__props = app.clone(jUI.Tree.prototype.__props), {
                     leafs: "leafs",
-					fieldsOrder: "_setDsFieldsOrder"
+                    levelFields: "_setDsFieldsOrder"
 
                 });
 
@@ -237,6 +326,8 @@
                         noWrap: true
                     });
 
+                    var s = this;
+
                     this.__V.Node = {
 
                         isExpanded: false,
@@ -275,6 +366,11 @@
                             layout: jUI.Layout.ltFollowHor,
                             forId: "",
                             parent: container,
+                            events: {
+                                click: function(a) {
+                                    s.__V.Node.treeObj.selectNode(s);
+                                }
+                            }
                         }),
 
 
@@ -291,6 +387,8 @@
 
 
                 }
+
+
 
                 jUI.Tree.Node.prototype.getText = function() {
                     return this.__V.Node.text.getText();
@@ -354,19 +452,21 @@
                 };
 
 
+
+
                 /**
-                select/unselect the node and all it's children	
+                check/uncheck the node and all it's children	
 				
 				**/
 
-                jUI.Tree.Node.prototype.setSelected = function(selected) {
+                jUI.Tree.Node.prototype.check = function(selected) {
                     if (this.__V.Node.selectDom.getChecked() != !selected)
-                        this._setSelected(selected)
+                        this._check(selected)
 
                 };
 
 
-                jUI.Tree.Node.prototype._setSelected = function(selected, node = this) {
+                jUI.Tree.Node.prototype._check = function(selected, node = this) {
 
                     var en = node.__V.Node;
                     var t = node.getChildren();
@@ -375,7 +475,7 @@
                         en.selectDom.setChecked(true);
                         for (var i = 0; i < t.length; i++) {
                             if (t[i].__V.Node.selectDom.getChecked() == false) {
-                                this._setSelected(true, t[i]);
+                                this._check(true, t[i]);
                             }
                         }
 
@@ -384,7 +484,7 @@
                         en.selectDom.setChecked(false);
                         for (var i = 0; i < t.length; i++) {
                             if (t[i].__V.Node.selectDom.getChecked()) {
-                                this._setSelected(false, t[i]);
+                                this._check(false, t[i]);
                             }
                         }
                     }
@@ -401,7 +501,7 @@
 
                     });
                     if (f == 0) {
-                        en.parentNode._setSelected(selected);
+                        en.parentNode._check(selected);
                     }
                 };
 
@@ -509,7 +609,7 @@
 
                         n.selectDom.addEvents({
                             check: function(state) {
-                                oj._setSelected(state);
+                                oj._check(state);
                                 if (oj.__V.Node.treeObj != null)
                                     oj.__V.Node.treeObj._doEvent("onNodeSelectionChange", oj);
                             }

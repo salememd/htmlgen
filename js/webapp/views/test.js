@@ -45,18 +45,14 @@
     };
     webapp.Administration.prototype._initView = function() {
         var so = this;
-        return new jUI.Window({
-            width: "100%",
-            height: "100%",
-
-            children: [new jUI.Tree({
+		var t = new jUI.Tree({
                 _style: {
                     overflow: "auto"
                 },
                 layout: jUI.Layout.ltFollowHor,
                 width: 500,
                 height: 500,
-				fieldsOrder: ["hours","subject", "id"],
+				levelFields: ["id","hours","subject"],
                 dataset: so.models.options,
                 events: {
                     onNodeSelectionChange: function(a) {
@@ -66,7 +62,26 @@
                         alert("User onCollaps/expand event: " + a.getText());
                     }
                 }
-            })]
+            });
+		var b = new jUI.Button({
+                    text: "collapse all and click",
+                    width: 250,
+                    layout: jUI.ltFollowVer,
+                    align: "|",
+                    tabIndex: 4,
+                    events:{
+                        click: function(){
+							so.models.options.setPos(4);
+							//t.selectNode(t.getTreeLeafs()[0].getChildren()[1].getChildren()[0]);
+						},
+                        keypress: this.loginButnKeyPress
+                    }
+                });	
+        return new jUI.Window({
+            width: "100%",
+            height: "100%",
+
+            children: [t,b]
         });
 
 
