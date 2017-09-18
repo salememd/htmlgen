@@ -28,7 +28,7 @@
                     rows: [
 					
 						["132112", "java", 3],
-						["132112", "java", 3],
+						["132112", "VB", 3],
 					    ["132112", "VB", 2],
 						["132112", "c", 1],
 						["231112", "java",2],
@@ -71,8 +71,52 @@
                     tabIndex: 4,
                     events:{
                         click: function(){
-							so.models.options.setPos(4);
-							//t.selectNode(t.getTreeLeafs()[0].getChildren()[1].getChildren()[0]);
+							
+							so.models.options.setPos(1);
+						},
+                        keypress: this.loginButnKeyPress
+                    }
+                });	
+		var c = new jUI.Button({
+                    text: "add Node",
+                    width: 250,
+                    layout: jUI.ltFollowVer,
+                    align: "|",
+                    tabIndex: 4,
+                    events:{
+                        click: function(){
+							
+							so.models.options.addData([["132112", "java3", 3]],1);
+						},
+                        keypress: this.loginButnKeyPress
+                    }
+                });
+			var d = new jUI.Button({
+                    text: "delete nodes",
+                    width: 250,
+                    layout: jUI.ltFollowVer,
+                    align: "|",
+                    tabIndex: 4,
+                    events:{
+                        click: function(){
+							alert("delete from 0 to 2");
+							so.models.options.deleteRecords(0,2);
+						},
+                        keypress: this.loginButnKeyPress
+                    }
+                });	
+				
+				var update = new jUI.Button({
+                    text: "update node",
+                    width: 250,
+                    layout: jUI.ltFollowVer,
+                    align: "|",
+                    tabIndex: 4,
+                    events:{
+                        click: function(){
+							//t.deteleAllNodes();
+						    //alert(t.getTreeLeafs().length)
+							so.models.options.updateData([["132112", "C", 3]],1,1);
 						},
                         keypress: this.loginButnKeyPress
                     }
@@ -81,7 +125,7 @@
             width: "100%",
             height: "100%",
 
-            children: [t,b]
+            children: [t,b,c,d,update]
         });
 
 

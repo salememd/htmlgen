@@ -78,6 +78,7 @@
                 jUI.Tree.prototype.leafs = function(nodes) {
                     var r = this.__V.Tree.rootNode;
                     r.addChild(nodes);
+					
                     r.setExpanded(true);
                     r.__V.Node.expandDom.setVisible(false);
                     this.addChildren([r]);
@@ -86,20 +87,18 @@
                     }
                 };
 
+
                 jUI.Tree.prototype._setDsFieldsOrder = function(fields) {
                     this.__V.Tree.DSfieldsOrder = fields;
 
                 };
-                jUI.Tree.prototype._doDataChanged = function() {
-                    alert("posetion changed to row : " + this.getDataset().getPos());
-                    this._updateSelectedNode();
-                }
 
-                jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
+                jUI.Tree.prototype._refresh = function(from, to) {
                     var ds = this.getDataset();
                     var v = this.__V.Tree;
                     var fields = [];
-                    var treeSet = [];
+                    var treeSet = this.getTreeLeafs();
+					
                     var k;
 
                     for (var f in ds.getFields()) {
@@ -161,27 +160,111 @@
                         }
                     }
 
-                    ds.forEach(function(index) {
+                    for (var i = from; i <= to; i++) {
                         k = 0;
-                        sort(treeSet, null, index);
-                    });
-
-
+                        sort(treeSet, null, i);
+						
+                    }
 
                     this.leafs(treeSet);
                 };
 
 
-                jUI.Tree.prototype.getTreeLeafs = function() {
-                    return this.__V.Tree.rootNode.getChildren();
+                jUI.Tree.prototype._doDataChanged = function() {
+                    alert("posetion changed to row : " + this.getDataset().getPos());
+					if(!this.isUserAction){
+                    this._updateSelectedNode();
+					}
+                }
+				
+				jUI.Tree.prototype._doDataAdded = function(dataset, from, to) {
+                    alert(from + "  " + to);
+                    this._refresh(from, to);
+					
+                };
+
+				jUI.Tree.prototype._doDataUpdate = function(dataset, from, to) {
+				this.deteleAllNodes();
+                this._refresh(0, this.getDataset().getRecords().length - 1);
+                };
+				
+                jUI.Tree.prototype._doBeforeDataDeleted = function(dataset, from, to) {
+
+                    var ds = this.getDataset();
+                    var fields = this.__V.Tree.DSfieldsOrder;
+                    var temp = [];
+                    var k = 0;
+                    var search = function(set, index) {
+                        if (k > fields.length - 1) {
+                            return;
+                        }
+                        for (var j = 0; j < set.length; j++) {
+
+                            if (set[j].getText() == ds.fAt(fields[k], index)) {
+                                if (set[j].getChildren().length > 0) {
+                                    k++;
+                                    search(set[j].getChildren(), index);
+
+                                } else {
+                                    k++;
+                                    temp.push(set[j]);
+
+                                }
+                            }
+
+                        }
+                    }
+					
+                    for (var i = from; i <= to; i++) {
+                        k = 0;
+                        search(this.getTreeLeafs(), i);
+                    }
+
+                    for (var i = 0; i < temp.length; i++) {
+                        var node = temp[i],
+                            p;
+
+                        while (node.__V.Node.parentNode != null) {
+                            if (node.getChildren().length > 0) {
+                                break;
+                            }
+                            p = node;
+                            node = node.__V.Node.parentNode;
+                            p.finalize();
+                        }
+
+
+                    }
+
+
+
+                };
+
+                jUI.Tree.prototype._doDatasetRefresh = function(dataset) {
+
+                    this._refresh(0, this.getDataset().getRecords().length - 1);
+                };
+
+				
+				
+                jUI.Tree.prototype.deteleAllNodes = function() {
+					this.__V.Tree.rootNode.finalize();
+					this.__V.Tree.rootNode = new jUI.Tree.Node({
+                            text: "",
+                            selectable: false,
+                            children: [],
+                            expanded: false,
+
+                        });
+
                 };
 
                 jUI.Tree.prototype._updateSelectedNode = function() {
                     var ds = this.getDataset();
                     var pos = ds.getPos();
                     var fields = this.__V.Tree.DSfieldsOrder;
-				
-					var temp;
+
+                    var temp;
                     var k = 0;
                     var search = function(set, index) {
                         if (k > fields.length - 1) {
@@ -230,6 +313,7 @@
 
                         var fields = this.__V.Tree.DSfieldsOrder;
                         path.reverse();
+						
                         var temp = [];
                         for (var i = 0; i < path.length; i++) {
                             var t = [];
@@ -249,20 +333,27 @@
                             }
 
                         }
-
+						this.isUserAction = true;
                         ds.setPos(temp[0]);
+						this.isUserAction = false;
+
+						
                     }
 
                 }
 
-                jUI.Tree.prototype.getSelectedNode = function() {
+				
+                jUI.Tree.prototype.getTreeLeafs = function() {
+                    return this.__V.Tree.rootNode.getChildren();
+                };
+				
+				jUI.Tree.prototype.getSelectedNode = function() {
                     return node.treeObj.selectedNode;
 
                 }
 
-
                 jUI.Tree.prototype.getCheckedNodes = function() {
-                    return this.__V.Tree.rootNode._getSelectedChildren();
+                    return this.__V.Tree.rootNode._getCheckedChildren();
                 };
 
 
@@ -368,6 +459,7 @@
                             parent: container,
                             events: {
                                 click: function(a) {
+								
                                     s.__V.Node.treeObj.selectNode(s);
                                 }
                             }
@@ -388,6 +480,22 @@
 
                 }
 
+                jUI.Tree.Node.prototype.finalize = function() {
+				
+                    var p = this.__V.Node.parentNode;
+
+                    var so = this;
+
+                    if (p != null) {
+
+                        p.__V.Node.children = p.getChildren().filter(function(item) {
+                            return item !== so;
+                        });
+                    }
+                    jUI.Layout.prototype.finalize.call(this);
+					
+
+                }
 
 
                 jUI.Tree.Node.prototype.getText = function() {
@@ -401,18 +509,22 @@
                 }
 
                 jUI.Tree.Node.prototype.removeChildren = function() {
+				var so = this;
                     this.__V.Node.children.forEach(function(element) {
                         element.finalize();
+						so.__V.Node.children.pop()
                     });
-                    this.__V.Node.children = [];
+					alert("sdsdsds"+ this.getChildren())
+                    //this.__V.Node.children = [];
+					
 
                 }
 
 
-                jUI.Tree.Node.prototype._getSelectedChildren = function(node = this.getChildren(), set = []) {
+                jUI.Tree.Node.prototype._getCheckedChildren = function(node = this.getChildren(), set = []) {
 
                     for (var i = 0; i < node.length; i++) {
-                        node[i]._getSelectedChildren(node[i].getChildren(), set);
+                        node[i]._getCheckedChildren(node[i].getChildren(), set);
                         if (node[i].__V.Node.selectDom.getChecked() == true && node[i].getChildren().length == 0) {
                             set.push(node[i]);
                         }
